@@ -5,6 +5,7 @@ import com.capstone.project.member.dto.response.MemberResponseDto;
 import com.capstone.project.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,5 +73,47 @@ public class MemberController {
     @GetMapping("/suggested")
     public List<MemberResponseDto> getSuggestedFriends(@RequestParam Integer memberId) {
         return memberService.getSuggestedFriends(memberId);
+    }
+
+
+
+
+
+
+    // 토큰에서 nickName 가져오기
+    @GetMapping("/nickName")
+    public ResponseEntity<String> getNickNameFromToken(@RequestHeader(value = "Authorization", required = false) String token) {
+        log.warn("Received Token: {}", token);
+        if (token == null || token.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authorization header is missing");
+        }
+        try {
+            String nickName = memberService.convertTokenToEntity(token).getNickName();
+            return ResponseEntity.ok(nickName);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+    }
+
+    // memberId로 nickName 가져오기
+    @GetMapping("/nickName/{id}")
+    public ResponseEntity<String> getNickNameById(@PathVariable Integer id) {
+        String nickName = memberService.getNickNameById(id);
+        if (nickName != null) {
+            return ResponseEntity.ok(nickName);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 회원 없음");
+        }
+    }
+
+    // memberId로 profileImg 가져오기
+    @GetMapping("/profileImg/{id}")
+    public ResponseEntity<String> getProfileImgById(@PathVariable Integer id) {
+        String profileImg = memberService.getProfileImgById(id);
+        if (profileImg != null) {
+            return ResponseEntity.ok(profileImg);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 회원 없음");
+        }
     }
 }

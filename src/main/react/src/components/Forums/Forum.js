@@ -21,10 +21,10 @@ import {
 const Forum = () => {
   const navigate = useNavigate();
 
-  // KR: 페이지 로드시 body의 배경색을 설정
+/*  // KR: 페이지 로드시 body의 배경색을 설정
   useEffect(() => {
     document.body.style.backgroundColor = "#f5f6f7";
-  }, []);
+  }, []);*/
 
   // KR: 현재 사용자 정보 상태 초기화
   const [memberId, setMemberId] = useState(null);

@@ -11,6 +11,7 @@ import Modal from "./kedu/etc/Modal2";
 import Grass from "./kedu/etc/Grass";
 import { useProfile } from "./ProfileContext";
 import { toast } from "react-toastify";
+import {Container} from "../design/CommonDesign";
 
 const MyPage = () => {
   const { profilePic } = useProfile();
@@ -221,451 +222,449 @@ const MyPage = () => {
     }
   };
   return (
-    <Content>
-      <div className="mypage-container">
-        {/* Left Section from Feed */}
-        <div className="profile-section">
-          <img src={profilePic} alt="Profile" className="profile-image" />
-          <p>Email: {profileInfo.email}</p>
-          <p>Name: {profileInfo.name}</p>
-          <NaverPayButton></NaverPayButton>
-          <Button3 onClick={PayButton}>정기구독</Button3>
+    <Container className="mypage-container">
+      {/* Left Section from Feed */}
+      <div className="profile-section">
+        <img src={profilePic} alt="Profile" className="profile-image" />
+        <p>Email: {profileInfo.email}</p>
+        <p>Name: {profileInfo.name}</p>
+{/*          <NaverPayButton></NaverPayButton>
+        <Button3 onClick={PayButton}>정기구독</Button3>*/}
+      </div>
+
+      {/* Right Section */}
+      <div className="container">
+        <div className="row">
+          {/* My School */}
+          <div className="col-md-6">
+            <div className="section-container card p-3 mb-4">
+              <h2>나의 학원</h2>
+              <div>
+                <table className="table table-striped">
+                  <tbody>
+                    {academy ? (
+                      academy.map((academy) => (
+                        <tr key={academy.academy_id}>
+                          <td>{academy.academy}</td>
+                          <td>
+                            <button
+                              onClick={() => academyDelete(academy.list_id)}
+                            >
+                              삭제
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td>등록된 학원이 없습니다.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* My Courses */}
+          <div className="col-md-6">
+            <div className="section-container card p-3 mb-4">
+              <h2>내가 수강한 강의</h2>
+              <div>
+                <table className="table table-striped">
+                  <tbody>
+                    {course ? (
+                      course.map((course) => (
+                        <tr key={course.list_id}>
+                          <td>{course.academy}</td>
+                          <td>{course.course}</td>
+                          <td>
+                            <button
+                              onClick={() => courseDelete(course.list_id)}
+                            >
+                              삭제
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td>등록한 강의가 없습니다.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Right Section */}
+        {/* My Feeds */}
+        <div className="section-container card p-3 mb-4">
+          <h2>내 피드</h2>
+          <ul className="list-group">
+            {feeds.map((feed) => (
+              <li key={feed.id} className="list-group-item">
+                <strong>{feed.title}</strong>
+                <p>{feed.content}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* School Comments */}
         <div className="container mt-4">
           <div className="row">
-            {/* My School */}
+            {/* School Comments */}
             <div className="col-md-6">
               <div className="section-container card p-3 mb-4">
-                <h2>나의 학원</h2>
+                <h3>학원 리뷰</h3>
                 <div>
-                  <table className="table table-striped">
-                    <tbody>
-                      {academy ? (
-                        academy.map((academy) => (
-                          <tr key={academy.academy_id}>
-                            <td>{academy.academy}</td>
-                            <td>
-                              <button
-                                onClick={() => academyDelete(academy.list_id)}
-                              >
-                                삭제
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td>등록된 학원이 없습니다.</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                  {academyComment ? (
+                    <div>
+                      <div>
+                        <p>
+                          취업 도움:{" "}
+                          {academyComment.avgJob
+                            ? academyComment.avgJob.toFixed(2)
+                            : "N/A"}
+                        </p>
+                        <p>
+                          강의 만족도:{" "}
+                          {academyComment.avgLecture
+                            ? academyComment.avgLecture.toFixed(2)
+                            : "N/A"}
+                        </p>
+                        <p>
+                          시설 만족도:{" "}
+                          {academyComment.avgFacilities
+                            ? academyComment.avgFacilities.toFixed(2)
+                            : "N/A"}
+                        </p>
+                        <p>
+                          강사 평가:{" "}
+                          {academyComment.avgTeacher
+                            ? academyComment.avgTeacher.toFixed(2)
+                            : "N/A"}
+                        </p>
+                        <p>
+                          교재 만족도:{" "}
+                          {academyComment.avgBooks
+                            ? academyComment.avgBooks.toFixed(2)
+                            : "N/A"}
+                        </p>
+                        <p>
+                          취업 지원:{" "}
+                          {academyComment.avgService
+                            ? academyComment.avgService.toFixed(2)
+                            : "N/A"}
+                        </p>
+                      </div>
+                      <div>
+                        <button
+                          onClick={() =>
+                            academyReviewDelete(
+                              academyComment.academy_comment_id
+                            )
+                          }
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p>로딩 중...</p>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* My Courses */}
+            {/* Lecture Comments */}
             <div className="col-md-6">
               <div className="section-container card p-3 mb-4">
-                <h2>내가 수강한 강의</h2>
+                <h3>강의 리뷰</h3>
                 <div>
-                  <table className="table table-striped">
-                    <tbody>
-                      {course ? (
-                        course.map((course) => (
-                          <tr key={course.list_id}>
-                            <td>{course.academy}</td>
-                            <td>{course.course}</td>
-                            <td>
-                              <button
-                                onClick={() => courseDelete(course.list_id)}
-                              >
-                                삭제
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td>등록한 강의가 없습니다.</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* My Feeds */}
-          <div className="section-container card p-3 mb-4">
-            <h2>내 피드</h2>
-            <ul className="list-group">
-              {feeds.map((feed) => (
-                <li key={feed.id} className="list-group-item">
-                  <strong>{feed.title}</strong>
-                  <p>{feed.content}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* School Comments */}
-          <div className="container mt-4">
-            <div className="row">
-              {/* School Comments */}
-              <div className="col-md-6">
-                <div className="section-container card p-3 mb-4">
-                  <h3>학원 리뷰</h3>
-                  <div>
-                    {academyComment ? (
+                  {courseComment ? (
+                    <div>
                       <div>
-                        <div>
-                          <p>
-                            취업 도움:{" "}
-                            {academyComment.avgJob
-                              ? academyComment.avgJob.toFixed(2)
-                              : "N/A"}
-                          </p>
-                          <p>
-                            강의 만족도:{" "}
-                            {academyComment.avgLecture
-                              ? academyComment.avgLecture.toFixed(2)
-                              : "N/A"}
-                          </p>
-                          <p>
-                            시설 만족도:{" "}
-                            {academyComment.avgFacilities
-                              ? academyComment.avgFacilities.toFixed(2)
-                              : "N/A"}
-                          </p>
-                          <p>
-                            강사 평가:{" "}
-                            {academyComment.avgTeacher
-                              ? academyComment.avgTeacher.toFixed(2)
-                              : "N/A"}
-                          </p>
-                          <p>
-                            교재 만족도:{" "}
-                            {academyComment.avgBooks
-                              ? academyComment.avgBooks.toFixed(2)
-                              : "N/A"}
-                          </p>
-                          <p>
-                            취업 지원:{" "}
-                            {academyComment.avgService
-                              ? academyComment.avgService.toFixed(2)
-                              : "N/A"}
-                          </p>
-                        </div>
-                        <div>
-                          <button
-                            onClick={() =>
-                              academyReviewDelete(
-                                academyComment.academy_comment_id
-                              )
-                            }
-                          >
-                            삭제
-                          </button>
-                        </div>
+                        <p>
+                          취업 도움:{" "}
+                          {courseComment.job !== undefined
+                            ? courseComment.job.toFixed(2)
+                            : "N/A"}
+                        </p>
+                        <p>
+                          강의 만족도:{" "}
+                          {courseComment.lecture !== undefined
+                            ? courseComment.lecture.toFixed(2)
+                            : "N/A"}
+                        </p>
+                        <p>
+                          강사 만족도:{" "}
+                          {courseComment.teacher !== undefined
+                            ? courseComment.teacher.toFixed(2)
+                            : "N/A"}
+                        </p>
+                        <p>
+                          교재 만족도:{" "}
+                          {courseComment.books !== undefined
+                            ? courseComment.books.toFixed(2)
+                            : "N/A"}
+                        </p>
+                        <p>
+                          기술 만족도:{" "}
+                          {courseComment.newTech !== undefined
+                            ? courseComment.newTech.toFixed(2)
+                            : "N/A"}
+                        </p>
+                        <p>
+                          학업 만족도:{" "}
+                          {courseComment.skillUp !== undefined
+                            ? courseComment.skillUp.toFixed(2)
+                            : "N/A"}
+                        </p>
                       </div>
-                    ) : (
-                      <p>로딩 중...</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Lecture Comments */}
-              <div className="col-md-6">
-                <div className="section-container card p-3 mb-4">
-                  <h3>강의 리뷰</h3>
-                  <div>
-                    {courseComment ? (
                       <div>
-                        <div>
-                          <p>
-                            취업 도움:{" "}
-                            {courseComment.job !== undefined
-                              ? courseComment.job.toFixed(2)
-                              : "N/A"}
-                          </p>
-                          <p>
-                            강의 만족도:{" "}
-                            {courseComment.lecture !== undefined
-                              ? courseComment.lecture.toFixed(2)
-                              : "N/A"}
-                          </p>
-                          <p>
-                            강사 만족도:{" "}
-                            {courseComment.teacher !== undefined
-                              ? courseComment.teacher.toFixed(2)
-                              : "N/A"}
-                          </p>
-                          <p>
-                            교재 만족도:{" "}
-                            {courseComment.books !== undefined
-                              ? courseComment.books.toFixed(2)
-                              : "N/A"}
-                          </p>
-                          <p>
-                            기술 만족도:{" "}
-                            {courseComment.newTech !== undefined
-                              ? courseComment.newTech.toFixed(2)
-                              : "N/A"}
-                          </p>
-                          <p>
-                            학업 만족도:{" "}
-                            {courseComment.skillUp !== undefined
-                              ? courseComment.skillUp.toFixed(2)
-                              : "N/A"}
-                          </p>
-                        </div>
-                        <div>
-                          <button
-                            onClick={() =>
-                              courseReviewDelete(
-                                courseComment.course_comment_id
-                              )
-                            }
-                          >
-                            삭제
-                          </button>
-                        </div>
+                        <button
+                          onClick={() =>
+                            courseReviewDelete(
+                              courseComment.course_comment_id
+                            )
+                          }
+                        >
+                          삭제
+                        </button>
                       </div>
-                    ) : (
-                      <p>로딩 중...</p>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <p>로딩 중...</p>
+                  )}
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Work Diary */}
-          <div className="section-container">
-            <h2>나의 작업일지</h2>
-            <ul>
-              {workDiary.map((entry) =>
-                editMode[entry.id] ? (
-                  <li key={entry.id}>
-                    <strong>{entry.date}</strong>
-                    <textarea
-                      value={entry.content}
-                      onChange={(e) =>
-                        handleDiaryChange(entry.id, e.target.value)
-                      }
-                      className="edit-input"
-                    />
-                    <button
-                      className="save-button"
-                      onClick={() => handleDiarySave(entry.id)}
-                    >
-                      <img
-                        src={imgLogo3}
-                        alt="저장"
-                        style={{ width: "20px", height: "20px" }}
-                      />
-                    </button>
-                  </li>
-                ) : (
-                  <li key={entry.id}>
-                    <strong>{entry.date}</strong>
-                    <p>{entry.content}</p>
-                    <button
-                      className="edit-button"
-                      onClick={() => handleDiaryEdit(entry.id)}
-                    >
-                      <img
-                        src={imgLogo2}
-                        alt="수정"
-                        style={{ width: "20px", height: "20px" }}
-                      />
-                    </button>
-                  </li>
-                )
-              )}
-            </ul>
-            <div className="add-diary-container">
-              <h3>작업일지 추가</h3>
-              <textarea
-                value={newDiaryContent}
-                onChange={(e) => setNewDiaryContent(e.target.value)}
-                placeholder="작업 내용을 작성하세요."
-                className="new-diary-input"
-              />
-              <button className="add-button" onClick={handleAddDiary}>
-                추가
-              </button>
-              <Grass></Grass>
             </div>
           </div>
         </div>
-        <Modal open={modalState} close={closeModal} type={true}></Modal>
-       {/* Styles */}
-        <style jsx>{`
-          .mypage-container {
-            display: grid;
-            grid-template-columns: 1fr 3fr;
-            gap: 20px;
-            padding: 20px;
-            background-color: #f5f6f7;
-            min-height: 100vh;
-          }
-          .profile-section {
-            position: sticky;
-            top: 90px; /* 네비게이션 바 높이만큼 내려오게 설정 */
-            align-self: start;
-            max-height: calc(
-              100vh - 90px
-            ); /* 뷰포트 높이에서 네비게이션 바 높이 제외 */
-            overflow-y: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            text-align: center;
-          }
+
+        {/* Work Diary */}
+        <div className="section-container">
+          <h2>나의 작업일지</h2>
+          <ul>
+            {workDiary.map((entry) =>
+              editMode[entry.id] ? (
+                <li key={entry.id}>
+                  <strong>{entry.date}</strong>
+                  <textarea
+                    value={entry.content}
+                    onChange={(e) =>
+                      handleDiaryChange(entry.id, e.target.value)
+                    }
+                    className="edit-input"
+                  />
+                  <button
+                    className="save-button"
+                    onClick={() => handleDiarySave(entry.id)}
+                  >
+                    <img
+                      src={imgLogo3}
+                      alt="저장"
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  </button>
+                </li>
+              ) : (
+                <li key={entry.id}>
+                  <strong>{entry.date}</strong>
+                  <p>{entry.content}</p>
+                  <button
+                    className="edit-button"
+                    onClick={() => handleDiaryEdit(entry.id)}
+                  >
+                    <img
+                      src={imgLogo2}
+                      alt="수정"
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  </button>
+                </li>
+              )
+            )}
+          </ul>
+          <div className="add-diary-container">
+            <h3>작업일지 추가</h3>
+            <textarea
+              value={newDiaryContent}
+              onChange={(e) => setNewDiaryContent(e.target.value)}
+              placeholder="작업 내용을 작성하세요."
+              className="new-diary-input"
+            />
+            <button className="add-button" onClick={handleAddDiary}>
+              추가
+            </button>
+            <Grass></Grass>
+          </div>
+        </div>
+      </div>
+      <Modal open={modalState} close={closeModal} type={true}></Modal>
+     {/* Styles */}
+      <style jsx>{`
+        .mypage-container {
+          display: grid;
+          grid-template-columns: 1fr 3fr;
+          gap: 20px;
+          padding: 20px;
+          //background-color: #f5f6f7;
+          min-height: 100vh;
+        }
+        .profile-section {
+          position: sticky;
+          top: 90px; /* 네비게이션 바 높이만큼 내려오게 설정 */
+          align-self: start;
+          max-height: calc(
+            100vh - 90px
+          ); /* 뷰포트 높이에서 네비게이션 바 높이 제외 */
+          overflow-y: auto;
+          background: white;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          text-align: center;
+        }
 
 
-          .profile-image {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            margin-bottom: 15px;
-          }
+        .profile-image {
+          width: 150px;
+          height: 150px;
+          border-radius: 50%;
+          margin-bottom: 15px;
+        }
 
-          .right-section {
-            margin-top: 70px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-          }
-            /* 768px 이하일 때 좌측 프로필 숨기고 우측이 전체 화면을 차지 */
-            @media (max-width: 768px) {
-              .mypage-container {
-                grid-template-columns: 1fr; /* 1열로 변경 */
-              }
-
-              .profile-section,
-              .profile-image {
-                display: none;
-              }
-
-              .right-section {
-                width: 100%; /* 전체 너비 차지 */
-              }
+        .right-section {
+          margin-top: 70px;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+          /* 768px 이하일 때 좌측 프로필 숨기고 우측이 전체 화면을 차지 */
+          @media (max-width: 768px) {
+            .mypage-container {
+              grid-template-columns: 1fr; /* 1열로 변경 */
             }
 
+            .profile-section,
+            .profile-image {
+              display: none;
+            }
 
-          .section-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            .right-section {
+              width: 100%; /* 전체 너비 차지 */
+            }
           }
 
-          .section-container h2 {
-            margin-bottom: 10px;
-          }
 
-          .section-container ul {
-            list-style: none;
-            padding: 0;
-          }
+        .section-container {
+          background: white;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
 
-          .section-container ul li {
-            margin-bottom: 10px;
-          }
+        .section-container h2 {
+          margin-bottom: 10px;
+        }
 
-          .edit-input,
-          .new-diary-input {
-            width: 100%;
-            padding: 8px;
-            margin: 10px 0;
-            font-size: 14px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            resize: none;
-          }
+        .section-container ul {
+          list-style: none;
+          padding: 0;
+        }
 
-          .edit-button,
-          .save-button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-          }
+        .section-container ul li {
+          margin-bottom: 10px;
+        }
 
-          .add-course-container {
-            margin-top: 16px;
-          }
+        .edit-input,
+        .new-diary-input {
+          width: 100%;
+          padding: 8px;
+          margin: 10px 0;
+          font-size: 14px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          resize: none;
+        }
 
-          .input-group {
-            display: flex;
-            align-items: center; /* 세로 가운데 정렬 */
-          }
+        .edit-button,
+        .save-button {
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 5px;
+        }
 
-          .course-add-button {
-            margin-left: 8px;
-            padding: 4px 8px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-          }
+        .add-course-container {
+          margin-top: 16px;
+        }
 
-          .course-add-button:hover {
-            background-color: #45a049;
-          }
+        .input-group {
+          display: flex;
+          align-items: center; /* 세로 가운데 정렬 */
+        }
 
-          .add-button {
-            width: 100%;
-            display: inline-block;
-            margin: 5px;
-            padding: 5px 10px;
-            background-color: #4caf50;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 14px;
-          }
+        .course-add-button {
+          margin-left: 8px;
+          padding: 4px 8px;
+          background-color: #4caf50;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
 
-          .add-button:hover {
-            background-color: #45a049;
-          }
+        .course-add-button:hover {
+          background-color: #45a049;
+        }
 
-          .edit-button img,
-          .save-button img {
-            vertical-align: middle;
-            width: 20px;
-            height: 20px;
-            transition: transform 0.2s ease;
-          }
+        .add-button {
+          width: 100%;
+          display: inline-block;
+          margin: 5px;
+          padding: 5px 10px;
+          background-color: #4caf50;
+          color: #fff;
+          border: none;
+          cursor: pointer;
+          border-radius: 4px;
+          font-size: 14px;
+        }
 
-          .edit-button:hover img,
-          .save-button:hover img {
-            transform: scale(1.1); /* 확대 효과 */
-          }
+        .add-button:hover {
+          background-color: #45a049;
+        }
 
-          .add-diary-container {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-          }
+        .edit-button img,
+        .save-button img {
+          vertical-align: middle;
+          width: 20px;
+          height: 20px;
+          transition: transform 0.2s ease;
+        }
 
-          .add-diary-container h3 {
-            margin-bottom: 5px;
-          }
-        `}</style>
-      </div>
-    </Content>
+        .edit-button:hover img,
+        .save-button:hover img {
+          transform: scale(1.1); /* 확대 효과 */
+        }
+
+        .add-diary-container {
+          margin-top: 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .add-diary-container h3 {
+          margin-bottom: 5px;
+        }
+      `}</style>
+    </Container>
   );
 };
 

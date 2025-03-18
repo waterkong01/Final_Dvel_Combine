@@ -63,7 +63,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.DELETE,"/api/members/**").permitAll()  // DELETE 요청 허용
-                .antMatchers("/", "/feed", "/static/**", "/auth/**", "/ws/**", "/movies/**", "/elastic/**").permitAll()
+                .antMatchers("/", "/feed", "/static/**", "/auth/**", "/ws/**", "/msg/**", "/movies/**", "/elastic/**").permitAll()
                 .antMatchers("/public/**").permitAll()
                 .antMatchers("/v2/api-docs", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**", "/swagger/**", "/sign-api/exception").permitAll()
                 .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
@@ -77,7 +77,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         "/kedu_board/**","/survey/**","/order/**","/trend/**").permitAll()// 로그인하여 인증된 사용자만 되도록 추후 변경
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers("/favicon.ico", "/manifest.json").permitAll()
+                .antMatchers("/favicon.ico", "/logo192.png", "/manifest.json").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider));

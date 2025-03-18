@@ -89,6 +89,34 @@ const Common = {
       window.location.href = "/login";
     }, 3500); // 알림 표시 후 3.5초 후 리디렉션
   },
+
+
+
+
+  getTokenByMemberId: async () => {
+    const accessToken = Common.getAccessToken();
+    try {
+      return await axios.get(Common.KH_DOMAIN + `/auth/getMemberId`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+      });
+    } catch (e) {
+      if (e.response.status === 401) {
+        await Common.handleUnauthorized();
+        const newToken = Common.getAccessToken();
+        if (newToken !== accessToken) {
+          return await axios.get(Common.KH_DOMAIN + `/auth/getMemberId`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + newToken,
+            },
+          });
+        }
+      }
+    }
+  },
 };
 
 export default Common;

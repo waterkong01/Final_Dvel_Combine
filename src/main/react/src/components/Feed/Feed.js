@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {useState, useEffect, useRef, useContext} from "react";
 import { useProfile } from "../../pages/ProfileContext";
 import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom"; // KR: 리디렉션을 위한 useNavigate 임포트
@@ -57,6 +57,10 @@ import {
   OriginalPostContent,
   ReplyContainer,
 } from "../../styles/FeedStyles";
+import {Container} from "../../design/CommonDesign";
+import {MemberInfoContext} from "../../api/provider/MemberInfoContextProvider2";
+import {ChatContext} from "../../api/context/ChatStore";
+import ChattingApi from "../../api/ChattingApi";
 
 /**
  * 재귀적으로 댓글(또는 대댓글)을 업데이트한다.
@@ -309,10 +313,10 @@ const renderReplies = (
 function Feed() {
   const navigate = useNavigate();
 
-  // KR: 페이지 로드시 body 배경색 설정
+/*  // KR: 페이지 로드시 body 배경색 설정
   useEffect(() => {
     document.body.style.backgroundColor = "#f5f6f7";
-  }, []);
+  }, []);*/
 
   // KR: 피드 및 관련 상태 초기화
   const [posts, setPosts] = useState([]);
@@ -345,6 +349,14 @@ function Feed() {
   const [editingFeedContent, setEditingFeedContent] = useState("");
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentContent, setEditingCommentContent] = useState("");
+
+  // 채팅
+  const {setRoomId, setIsMenuOpen, setSelectedPage} = useContext(ChatContext);
+  const [chatRooms, setChatRooms] = useState([]);
+  // const {setRoomId} = useContext(ChatContext);
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  // 채팅
+  const { member } = useContext(MemberInfoContext);
 
   useEffect(() => {
     posts.forEach((post) => {
@@ -829,368 +841,431 @@ function Feed() {
     }
   };
 
+  const privateChat = async (post) => {
+    if (!memberId) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    const sender = memberId;
+    const receiver = Number(post.memberId);
+
+    if (sender === receiver) {
+      alert("본인과는 채팅할 수 없습니다.");
+      return;
+    }
+
+    try {
+      // 현재 로그인한 사용자와 post 작성자의 채팅방이 있는지 확인
+      const existingChatRoom = chatRooms.find(room =>
+/*          (room.senderId === memberId && room.receiverId === post.memberId) ||
+          (room.senderId === post.memberId && room.receiverId === memberId)*/
+          (room.senderId === sender && room.receiverId === receiver) ||
+          (room.senderId === receiver && room.receiverId === sender)
+      );
+
+      if (existingChatRoom) {
+/*        setIsMenuOpen(false);
+        // 기존 채팅방이 존재하면 해당 채팅방으로 이동
+        setRoomId(existingChatRoom.roomId);
+        navigate("/msg");
+        setSelectedPage("chatting");*/
+        navigate("/msg", {
+          state: {selectedPage: "chatting", roomId: existingChatRoom.roomId}
+        });
+      } else {
+        // setIsMenuOpen(false);
+        // 기존 채팅방이 없으면 새로운 채팅방 생성 후 이동
+        const newChatRoom = await ChattingApi.chatCreate(sender, receiver);
+        // const newChatRoom = await ChattingApi.chatCreate(memberId, post.memberId);
+        console.log("새로운 채팅방 생성됨:", newChatRoom);
+
+        if (newChatRoom && newChatRoom.roomId) {
+/*          setRoomId(newChatRoom.roomId);
+          navigate("/msg");
+          setSelectedPage("chatting");*/
+          navigate("/msg", {
+            state: {selectedPage: "chatting", roomId: newChatRoom.roomId}
+          });
+        } else {
+          alert("채팅방 생성에 실패했습니다.");
+        }
+      }
+    } catch (error) {
+      console.error("채팅방 확인 또는 생성 중 오류 발생:", error);
+      alert("채팅을 시작하는 데 실패했습니다.");
+    }
+  };
+
   return (
-    <LayoutContainer>
-      {/* KR: 프로필 섹션 */}
-      <ProfileSection>
-        <ProfileImage src={imgLogo2} alt="프로필 이미지" />
-        <p>Email: {profileInfo.email}</p>
-        <p>Name: {profileInfo.name}</p>
-      </ProfileSection>
+    <Container className="center font_color">
+      <LayoutContainer>
+        {/* KR: 프로필 섹션 */}
+        <ProfileSection>
+          <ProfileImage src={imgLogo2} alt="프로필 이미지" />
+          <p>Email: {profileInfo.email}</p>
+          <p>Name: {profileInfo.name}</p>
+        </ProfileSection>
 
-      <FeedContainer>
-        {/* KR: 피드 작성 섹션 */}
-        <CreateFeedContainer>
-          <TextareaContainer>
+        <FeedContainer>
+          {/* KR: 피드 작성 섹션 */}
+          <CreateFeedContainer>
+            <TextareaContainer>
             <textarea
-              value={newFeed}
-              onChange={(e) => setNewFeed(e.target.value)}
-              placeholder="새 피드를 작성하세요..."
-              rows="3"
+                value={newFeed}
+                onChange={(e) => setNewFeed(e.target.value)}
+                placeholder="새 피드를 작성하세요..."
+                rows="3"
             />
-            <input
-              id="image-upload"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              style={{ display: "none" }}
+              <input
+                  id="image-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  style={{ display: "none" }}
+              />
+              <UploadIconLabel htmlFor="image-upload">
+                <UploadIcon src={imgLogo3} alt="이미지 업로드" />
+              </UploadIconLabel>
+            </TextareaContainer>
+            {image && <UploadedImage src={image} alt="업로드된 이미지" />}
+            <button onClick={handleCreateFeed}>피드 작성</button>
+          </CreateFeedContainer>
+
+          {/* KR: 새로고침 버튼 */}
+          <RefreshButton onClick={handleRefreshFeeds}>
+            <RefreshIcon
+                className={refreshing ? "refreshing" : ""}
+                src={imgLogo1}
+                alt="새로고침"
             />
-            <UploadIconLabel htmlFor="image-upload">
-              <UploadIcon src={imgLogo3} alt="이미지 업로드" />
-            </UploadIconLabel>
-          </TextareaContainer>
-          {image && <UploadedImage src={image} alt="업로드된 이미지" />}
-          <button onClick={handleCreateFeed}>피드 작성</button>
-        </CreateFeedContainer>
+          </RefreshButton>
 
-        {/* KR: 새로고침 버튼 */}
-        <RefreshButton onClick={handleRefreshFeeds}>
-          <RefreshIcon
-            className={refreshing ? "refreshing" : ""}
-            src={imgLogo1}
-            alt="새로고침"
-          />
-        </RefreshButton>
-
-        {/* KR: 피드 게시물 목록 */}
-        <PostList>
-          {(posts || []).map((post, index) => {
-            const isLastPost = (posts || []).length === index + 1;
-            return (
-              <Post
-                key={post.feedId}
-                ref={isLastPost ? lastPostElementRef : null}
-              >
-                <PostHeader>
-                  <AuthorImage
-                    src={post.profilePictureUrl || imgLogo2}
-                    alt="회원 이미지"
-                  />
-                  <AuthorDetails>
-                    <AuthorName>{post.authorName || "Unknown"}</AuthorName>
-                    <PostDate>{post.createdAt}</PostDate>
-                  </AuthorDetails>
-                  {post.memberId === memberId && (
-                    <EditButton
-                      onClick={() => startEditingFeed(post)}
-                      style={{ marginLeft: "auto" }}
-                    >
-                      수정
-                    </EditButton>
-                  )}
-                </PostHeader>
-                {post.originalPoster && (
-                  <OriginalPostContainer>
-                    <OriginalPostHeader>
-                      원본 게시글 {getOriginalPosterLabel(post.originalPoster)}
-                    </OriginalPostHeader>
-                    <OriginalPostContent>
-                      {post.repostedFromContent || "내용이 없습니다."}
-                    </OriginalPostContent>
-                  </OriginalPostContainer>
-                )}
-                {editingFeedId === post.feedId ? (
-                  <div>
-                    <CommentInput
-                      value={editingFeedContent}
-                      onChange={(e) => setEditingFeedContent(e.target.value)}
-                      placeholder="게시글 수정..."
-                    />
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        gap: "10px",
-                        marginTop: "5px",
-                      }}
-                    >
-                      <EditButton onClick={submitFeedEdit}>저장</EditButton>
-                      <EditButton onClick={() => setEditingFeedId(null)}>
-                        취소
-                      </EditButton>
-                    </div>
-                  </div>
-                ) : (
-                  <p>{post.content}</p>
-                )}
-                {post.mediaUrl && (
-                  <UploadedImage src={post.mediaUrl} alt="게시글 이미지" />
-                )}
-                <hr />
-                <PostActions>
-                  <ActionButton onClick={() => handleLike(post.feedId)}>
-                    {likedPosts[post.feedId] ? "Unlike" : "Like"} (
-                    {post.likesCount})
-                  </ActionButton>
-                  <ActionButton onClick={() => toggleCommentInput(post.feedId)}>
-                    Comment
-                  </ActionButton>
-                  <ActionButton onClick={() => toggleRepostInput(post.feedId)}>
-                    Repost
-                  </ActionButton>
-                  <ActionButton onClick={() => handleSaveFeed(post.feedId)}>
-                    Save
-                  </ActionButton>
-                </PostActions>
-                {showCommentInput[post.feedId] && (
-                  <CommentContainer>
-                    <CommentInputContainer>
-                      <CommentInput
-                        type="text"
-                        placeholder="댓글 추가..."
-                        value={commentInputs[post.feedId] || ""}
-                        onChange={(e) =>
-                          handleCommentInputChange(post.feedId, e.target.value)
-                        }
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter")
-                            handleCommentSubmit(post.feedId);
-                        }}
+          {/* KR: 피드 게시물 목록 */}
+          <PostList>
+            {(posts || []).map((post, index) => {
+              const isLastPost = (posts || []).length === index + 1;
+              return (
+                  <Post
+                      key={post.feedId}
+                      ref={isLastPost ? lastPostElementRef : null}
+                  >
+                    <PostHeader>
+                      <AuthorImage
+                          src={post.profilePictureUrl || imgLogo2}
+                          alt="회원 이미지"
                       />
-                      <CommentSubmitIcon
-                        onClick={() => handleCommentSubmit(post.feedId)}
-                      >
-                        &#10148;
-                      </CommentSubmitIcon>
-                    </CommentInputContainer>
-                  </CommentContainer>
-                )}
-                {post.comments && (post.comments || []).length > 0 && (
-                  <div style={{ marginTop: "10px" }}>
-                    {(post.comments || []).map((comment, idx) => (
-                      <CommentCard
-                        key={
-                          comment.commentId
-                            ? `${comment.commentId}-${idx}`
-                            : `${idx}`
-                        }
-                      >
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                          <img
-                            src={comment.profilePictureUrl || imgLogo2}
-                            alt="댓글 작성자 이미지"
-                            style={{
-                              width: "30px",
-                              height: "30px",
-                              borderRadius: "50%",
-                              marginRight: "10px",
-                            }}
+                      <AuthorDetails>
+                        <AuthorName>{post.authorName || "Unknown"}</AuthorName>
+                        <div>
+                          {memberId !== post?.memberId && ( // 본인이 아닐 때만 버튼 보이기
+                              <button onClick={() => privateChat(post)}>1:1 채팅하기</button>
+                          )}
+                        </div>
+                        <PostDate>{post.createdAt}</PostDate>
+                      </AuthorDetails>
+                      {post.memberId === memberId && (
+                          <EditButton
+                              onClick={() => startEditingFeed(post)}
+                              style={{ marginLeft: "auto" }}
+                          >
+                            수정
+                          </EditButton>
+                      )}
+                    </PostHeader>
+                    {post.originalPoster && (
+                        <OriginalPostContainer>
+                          <OriginalPostHeader>
+                            원본 게시글 {getOriginalPosterLabel(post.originalPoster)}
+                          </OriginalPostHeader>
+                          <OriginalPostContent>
+                            {post.repostedFromContent || "내용이 없습니다."}
+                          </OriginalPostContent>
+                        </OriginalPostContainer>
+                    )}
+                    {editingFeedId === post.feedId ? (
+                        <div>
+                          <CommentInput
+                              value={editingFeedContent}
+                              onChange={(e) => setEditingFeedContent(e.target.value)}
+                              placeholder="게시글 수정..."
                           />
                           <div
-                            style={{ display: "flex", flexDirection: "column" }}
-                          >
-                            <span
-                              style={{ fontWeight: "bold", fontSize: "14px" }}
-                            >
-                              {comment.memberName || "Unknown"}
-                            </span>
-                            <span style={{ fontSize: "12px", color: "#888" }}>
-                              {comment.currentCompany || "미등록 회사"}
-                            </span>
-                          </div>
-                        </div>
-                        {editingCommentId === comment.commentId ? (
-                          <div>
-                            <CommentInput
-                              type="text"
-                              value={editingCommentContent}
-                              onChange={(e) =>
-                                setEditingCommentContent(e.target.value)
-                              }
-                              placeholder="댓글 수정..."
-                            />
-                            <div
                               style={{
                                 display: "flex",
                                 justifyContent: "flex-end",
                                 gap: "10px",
                                 marginTop: "5px",
                               }}
-                            >
-                              <EditButton onClick={submitCommentEdit}>
-                                저장
-                              </EditButton>
-                              <EditButton
-                                onClick={() => setEditingCommentId(null)}
-                              >
-                                취소
-                              </EditButton>
-                            </div>
-                          </div>
-                        ) : (
-                          <div style={{ fontSize: "14px" }}>
-                            {comment.comment}
-                          </div>
-                        )}
-                        <div style={{ display: "flex", gap: "10px" }}>
-                          <button
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                              color: "#0073b1",
-                              fontSize: "12px",
-                              cursor: "pointer",
-                            }}
-                            onClick={() =>
-                              handleCommentLike(comment.commentId, post.feedId)
-                            }
-                            disabled={commentLikeLoading[comment.commentId]}
                           >
-                            {likedComments[comment.commentId]
-                              ? "Unlike"
-                              : "Like"}{" "}
-                            (
-                            {comment.likesCount != null
-                              ? comment.likesCount
-                              : 0}
-                            )
-                          </button>
-                          <button
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                              color: "#0073b1",
-                              fontSize: "12px",
-                              cursor: "pointer",
-                            }}
-                            onClick={() => toggleReplyInput(comment.commentId)}
-                          >
-                            Reply
-                          </button>
-                          {comment.memberId === memberId && (
-                            <button
-                              onClick={() => startEditingComment(comment)}
-                              style={{
-                                border: "none",
-                                background: "transparent",
-                                color: "#0073b1",
-                                fontSize: "12px",
-                                cursor: "pointer",
-                              }}
-                            >
-                              수정
-                            </button>
-                          )}
-                        </div>
-                        {comment.replies &&
-                          (comment.replies || []).length > 0 && (
-                            <div>
-                              {renderReplies(
-                                comment.replies,
-                                post.feedId,
-                                memberId,
-                                likedComments,
-                                commentLikeLoading,
-                                handleCommentLike,
-                                toggleReplyInput,
-                                showReplyInput,
-                                replyInputs,
-                                setReplyInputs,
-                                handleReplySubmit,
-                                startEditingComment,
-                                editingCommentId,
-                                editingCommentContent,
-                                setEditingCommentContent,
-                                submitCommentEdit
-                              )}
-                            </div>
-                          )}
-                        {showReplyInput[comment.commentId] && (
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              marginTop: "5px",
-                            }}
-                          >
-                            <CommentInput
-                              type="text"
-                              placeholder="답글 추가..."
-                              value={replyInputs[comment.commentId] || ""}
-                              onChange={(e) =>
-                                setReplyInputs((prev) => ({
-                                  ...prev,
-                                  [comment.commentId]: e.target.value,
-                                }))
-                              }
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter")
-                                  handleReplySubmit(
-                                    comment.commentId,
-                                    post.feedId
-                                  );
-                              }}
-                            />
-                            <EditButton
-                              style={{ padding: "5px", fontSize: "12px" }}
-                              onClick={() =>
-                                handleReplySubmit(
-                                  comment.commentId,
-                                  post.feedId
-                                )
-                              }
-                            >
-                              Send
+                            <EditButton onClick={submitFeedEdit}>저장</EditButton>
+                            <EditButton onClick={() => setEditingFeedId(null)}>
+                              취소
                             </EditButton>
                           </div>
-                        )}
-                      </CommentCard>
-                    ))}
-                  </div>
-                )}
-                {showRepostInput[post.feedId] && (
-                  <RepostContainer>
-                    <RepostInput
-                      type="text"
-                      placeholder="리포스트 시 코멘트 추가..."
-                      value={repostInputs[post.feedId] || ""}
-                      onChange={(e) =>
-                        handleRepostInputChange(post.feedId, e.target.value)
-                      }
-                    />
-                    <RepostSubmitButton
-                      onClick={() => handleRepostSubmit(post.feedId)}
-                    >
-                      Repost
-                    </RepostSubmitButton>
-                  </RepostContainer>
-                )}
-              </Post>
-            );
-          })}
-        </PostList>
-      </FeedContainer>
+                        </div>
+                    ) : (
+                        <p>{post.content}</p>
+                    )}
+                    {post.mediaUrl && (
+                        <UploadedImage src={post.mediaUrl} alt="게시글 이미지" />
+                    )}
+                    <hr />
+                    <PostActions>
+                      <ActionButton onClick={() => handleLike(post.feedId)}>
+                        {likedPosts[post.feedId] ? "Unlike" : "Like"} (
+                        {post.likesCount})
+                      </ActionButton>
+                      <ActionButton onClick={() => toggleCommentInput(post.feedId)}>
+                        Comment
+                      </ActionButton>
+                      <ActionButton onClick={() => toggleRepostInput(post.feedId)}>
+                        Repost
+                      </ActionButton>
+                      <ActionButton onClick={() => handleSaveFeed(post.feedId)}>
+                        Save
+                      </ActionButton>
+                    </PostActions>
+                    {showCommentInput[post.feedId] && (
+                        <CommentContainer>
+                          <CommentInputContainer>
+                            <CommentInput
+                                type="text"
+                                placeholder="댓글 추가..."
+                                value={commentInputs[post.feedId] || ""}
+                                onChange={(e) =>
+                                    handleCommentInputChange(post.feedId, e.target.value)
+                                }
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter")
+                                    handleCommentSubmit(post.feedId);
+                                }}
+                            />
+                            <CommentSubmitIcon
+                                onClick={() => handleCommentSubmit(post.feedId)}
+                            >
+                              &#10148;
+                            </CommentSubmitIcon>
+                          </CommentInputContainer>
+                        </CommentContainer>
+                    )}
+                    {post.comments && (post.comments || []).length > 0 && (
+                        <div style={{ marginTop: "10px" }}>
+                          {(post.comments || []).map((comment, idx) => (
+                              <CommentCard
+                                  key={
+                                    comment.commentId
+                                        ? `${comment.commentId}-${idx}`
+                                        : `${idx}`
+                                  }
+                              >
+                                <div style={{ display: "flex", alignItems: "center" }}>
+                                  <img
+                                      src={comment.profilePictureUrl || imgLogo2}
+                                      alt="댓글 작성자 이미지"
+                                      style={{
+                                        width: "30px",
+                                        height: "30px",
+                                        borderRadius: "50%",
+                                        marginRight: "10px",
+                                      }}
+                                  />
+                                  <div
+                                      style={{ display: "flex", flexDirection: "column" }}
+                                  >
+                            <span
+                                style={{ fontWeight: "bold", fontSize: "14px" }}
+                            >
+                              {comment.memberName || "Unknown"}
+                            </span>
+                                    <span style={{ fontSize: "12px", color: "#888" }}>
+                              {comment.currentCompany || "미등록 회사"}
+                            </span>
+                                  </div>
+                                </div>
+                                {editingCommentId === comment.commentId ? (
+                                    <div>
+                                      <CommentInput
+                                          type="text"
+                                          value={editingCommentContent}
+                                          onChange={(e) =>
+                                              setEditingCommentContent(e.target.value)
+                                          }
+                                          placeholder="댓글 수정..."
+                                      />
+                                      <div
+                                          style={{
+                                            display: "flex",
+                                            justifyContent: "flex-end",
+                                            gap: "10px",
+                                            marginTop: "5px",
+                                          }}
+                                      >
+                                        <EditButton onClick={submitCommentEdit}>
+                                          저장
+                                        </EditButton>
+                                        <EditButton
+                                            onClick={() => setEditingCommentId(null)}
+                                        >
+                                          취소
+                                        </EditButton>
+                                      </div>
+                                    </div>
+                                ) : (
+                                    <div style={{ fontSize: "14px" }}>
+                                      {comment.comment}
+                                    </div>
+                                )}
+                                <div style={{ display: "flex", gap: "10px" }}>
+                                  <button
+                                      style={{
+                                        border: "none",
+                                        background: "transparent",
+                                        color: "#0073b1",
+                                        fontSize: "12px",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() =>
+                                          handleCommentLike(comment.commentId, post.feedId)
+                                      }
+                                      disabled={commentLikeLoading[comment.commentId]}
+                                  >
+                                    {likedComments[comment.commentId]
+                                        ? "Unlike"
+                                        : "Like"}{" "}
+                                    (
+                                    {comment.likesCount != null
+                                        ? comment.likesCount
+                                        : 0}
+                                    )
+                                  </button>
+                                  <button
+                                      style={{
+                                        border: "none",
+                                        background: "transparent",
+                                        color: "#0073b1",
+                                        fontSize: "12px",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() => toggleReplyInput(comment.commentId)}
+                                  >
+                                    Reply
+                                  </button>
+                                  {comment.memberId === memberId && (
+                                      <button
+                                          onClick={() => startEditingComment(comment)}
+                                          style={{
+                                            border: "none",
+                                            background: "transparent",
+                                            color: "#0073b1",
+                                            fontSize: "12px",
+                                            cursor: "pointer",
+                                          }}
+                                      >
+                                        수정
+                                      </button>
+                                  )}
+                                </div>
+                                {comment.replies &&
+                                    (comment.replies || []).length > 0 && (
+                                        <div>
+                                          {renderReplies(
+                                              comment.replies,
+                                              post.feedId,
+                                              memberId,
+                                              likedComments,
+                                              commentLikeLoading,
+                                              handleCommentLike,
+                                              toggleReplyInput,
+                                              showReplyInput,
+                                              replyInputs,
+                                              setReplyInputs,
+                                              handleReplySubmit,
+                                              startEditingComment,
+                                              editingCommentId,
+                                              editingCommentContent,
+                                              setEditingCommentContent,
+                                              submitCommentEdit
+                                          )}
+                                        </div>
+                                    )}
+                                {showReplyInput[comment.commentId] && (
+                                    <div
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                          marginTop: "5px",
+                                        }}
+                                    >
+                                      <CommentInput
+                                          type="text"
+                                          placeholder="답글 추가..."
+                                          value={replyInputs[comment.commentId] || ""}
+                                          onChange={(e) =>
+                                              setReplyInputs((prev) => ({
+                                                ...prev,
+                                                [comment.commentId]: e.target.value,
+                                              }))
+                                          }
+                                          onKeyDown={(e) => {
+                                            if (e.key === "Enter")
+                                              handleReplySubmit(
+                                                  comment.commentId,
+                                                  post.feedId
+                                              );
+                                          }}
+                                      />
+                                      <EditButton
+                                          style={{ padding: "5px", fontSize: "12px" }}
+                                          onClick={() =>
+                                              handleReplySubmit(
+                                                  comment.commentId,
+                                                  post.feedId
+                                              )
+                                          }
+                                      >
+                                        Send
+                                      </EditButton>
+                                    </div>
+                                )}
+                              </CommentCard>
+                          ))}
+                        </div>
+                    )}
+                    {showRepostInput[post.feedId] && (
+                        <RepostContainer>
+                          <RepostInput
+                              type="text"
+                              placeholder="리포스트 시 코멘트 추가..."
+                              value={repostInputs[post.feedId] || ""}
+                              onChange={(e) =>
+                                  handleRepostInputChange(post.feedId, e.target.value)
+                              }
+                          />
+                          <RepostSubmitButton
+                              onClick={() => handleRepostSubmit(post.feedId)}
+                          >
+                            Repost
+                          </RepostSubmitButton>
+                        </RepostContainer>
+                    )}
+                  </Post>
+              );
+            })}
+          </PostList>
+        </FeedContainer>
 
-      {/* KR: 친구 추천 섹션 */}
-      <FriendsSection>
-        <h2>친구 추천</h2>
-        <FriendList>
-          <FriendSuggestions memberId={memberId} />
-        </FriendList>
-      </FriendsSection>
+        {/* KR: 친구 추천 섹션 */}
+        <FriendsSection>
+          <h2>친구 추천</h2>
+          <FriendList>
+            <FriendSuggestions memberId={memberId} />
+          </FriendList>
+        </FriendsSection>
 
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-    </LayoutContainer>
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+      </LayoutContainer>
+    </Container>
   );
 }
 

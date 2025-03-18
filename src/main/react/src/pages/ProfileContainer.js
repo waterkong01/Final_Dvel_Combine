@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Profile from "./Profile"; // Profile 컴포넌트
-import Feed from "./Feed"; // Feed 컴포넌트
+import Feed from "../components/Feed/Feed"; // Feed 컴포넌트
 
 const ProfileContainer = () => {
   // 프로필 정보 상태

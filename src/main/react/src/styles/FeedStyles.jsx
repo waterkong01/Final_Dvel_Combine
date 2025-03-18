@@ -9,7 +9,7 @@ export const LayoutContainer = styled.div`
   grid-template-columns: 1fr 2fr 1fr;
   gap: 20px;
   padding: 20px;
-  background-color: #f5f6f7;
+  //background-color: #f5f6f7;
   min-height: 100vh;
   font-family: Arial, sans-serif;
 

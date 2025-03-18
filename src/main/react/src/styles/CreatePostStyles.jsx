@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const CreatePostContainer = styled.div`
-  background-color: #f5f6f7;
+  //background-color: #f5f6f7;
   max-width: 800px;
   margin: 70px auto;
   padding: 20px;

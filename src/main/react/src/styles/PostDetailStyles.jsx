@@ -2,7 +2,7 @@ import styled, { createGlobalStyle } from "styled-components";
 
 // Post detail container
 export const PostDetailContainer = styled.div`
-  background-color: #f5f6f7;
+  //background-color: #f5f6f7;
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;

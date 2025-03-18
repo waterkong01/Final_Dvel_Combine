@@ -14,7 +14,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Integer> {
     Optional<Profile> findByMemberId(Integer memberId);
 
     @Query("SELECT new com.capstone.project.myPage.dto.MemberProfileResponseDto(" +
-            "m.id, m.email, m.name, m.phoneNumber, m.profilePictureUrl, m.currentCompany, m.showCompany, " +
+            "m.id, m.email, m.name, m.phoneNumber, m.profileImg, m.currentCompany, m.showCompany, " +
             "p.location, " +
             "p.bio, " +
             "p.skills, " +

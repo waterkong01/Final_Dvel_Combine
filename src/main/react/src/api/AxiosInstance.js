@@ -1,14 +1,14 @@
 import axios from "axios";
-import Commons from "../utils/Common";
+import Common from "../utils/Common";
 
 const AxiosInstance = axios.create({
-  baseURL: Commons.KH_DOMAIN,
+  baseURL: Common.KH_DOMAIN,
 });
 
 AxiosInstance.interceptors.request.use(
   // 요청 인터셉터 추가
   async (config) => {
-    const accessToken = Commons.getAccessToken();
+    const accessToken = Common.getAccessToken();
     config.headers.Authorization = `Bearer ${accessToken}`;
     return config;
   },
@@ -24,10 +24,10 @@ AxiosInstance.interceptors.response.use(
   },
   async (error) => {
     if (error.response && error.response.status === 401) {
-      const newToken = await Commons.handleUnathorized();
+      const newToken = await Common.handleUnauthorized();
       if (newToken) {
         // 원래 하고자 했던 요청을 다시 시도
-        error.config.headers.Authorization = `Bearer ${Commons.getAccessToken()}`;
+        error.config.headers.Authorization = `Bearer ${Common.getAccessToken()}`;
         return AxiosInstance.request(error.config);
       }
     }

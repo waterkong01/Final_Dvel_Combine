@@ -8,6 +8,7 @@ import com.capstone.project.member.entity.Member;
 import com.capstone.project.member.repository.MemberRepository;
 import com.capstone.project.member.service.AuthService;
 import com.capstone.project.member.service.MemberService;
+import com.capstone.project.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -98,5 +99,22 @@ public class AuthController {
         String phoneNumber = request.get("phoneNumber");
         boolean isAvailable = !memberRepository.existsByPhoneNumber(phoneNumber);
         return ResponseEntity.ok(Collections.singletonMap("isAvailable", isAvailable));
+    }
+
+    // 중복 닉네임 회원 확인
+    @PostMapping("/check-nickname")
+    public ResponseEntity<Map<String, Boolean>> checkNickName(@RequestBody Map<String, String> request) {
+        String nickName = request.get("nickName");
+        boolean isAvailable = !memberRepository.existsByNickName(nickName);
+        return ResponseEntity.ok(Collections.singletonMap("isAvailable", isAvailable));
+    }
+
+    @GetMapping("/getMemberId")
+    public ResponseEntity<Long> getMemberId() {
+        Long memberId = SecurityUtil.getCurrentMemberId();  // 현재 인증된 사용자의 memberId를 가져옴
+        if (memberId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();  // 인증되지 않은 경우
+        }
+        return ResponseEntity.ok(memberId);
     }
 }

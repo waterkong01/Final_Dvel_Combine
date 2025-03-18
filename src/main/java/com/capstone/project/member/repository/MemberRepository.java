@@ -4,6 +4,7 @@ import com.capstone.project.member.entity.Member;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -32,4 +33,15 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
      */
     @Query("SELECT m FROM Member m WHERE m.id <> :memberId ORDER BY FUNCTION('RAND')")
     List<Member> findRandomMembersExcludingUser(Integer memberId, Pageable pageable);
+
+
+    boolean existsByNickName(String nickName);
+    Optional<Member> findById(Integer id);
+    Optional<Member> findByNickName(String nickName);
+    // 채팅 - memberId로 nickName 가져오기
+    @Query ("SELECT m.nickName FROM Member m WHERE m.id = ?1")
+    String getNickNameById(@Param("memberId") Integer id);
+    // 채팅 - memberId로 profileImg 가져오기
+    @Query ("SELECT m.profileImg FROM Member m WHERE m.id = ?1")
+    String getProfileImgById(@Param("memberId") Integer id);
 }

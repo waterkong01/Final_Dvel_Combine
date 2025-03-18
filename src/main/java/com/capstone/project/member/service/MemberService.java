@@ -1,5 +1,6 @@
 package com.capstone.project.member.service;
 
+import com.capstone.project.jwt.TokenProvider;
 import com.capstone.project.jwt.repository.RefreshTokenRepository;
 import com.capstone.project.member.dto.request.MemberRequestDto;
 import com.capstone.project.member.dto.response.MemberResponseDto;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +32,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-
+    private final TokenProvider tokenProvider;
     /**
      * 회원 프로필 조회
      *
@@ -43,22 +45,23 @@ public class MemberService {
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with ID: " + memberId));
 
         // 프로필 사진 URL이 없으면 기본 URL 사용
-        String profilePictureUrl = member.getProfilePictureUrl();
-        if (profilePictureUrl == null || profilePictureUrl.isEmpty()) {
-            profilePictureUrl = "https://firebasestorage.googleapis.com/v0/b/kh-react-firebase.firebasestorage.app/o/default-profile-picture-url.jpg?alt=media&token=16b39451-4ee9-4bdd-adc9-78b6cda4d4bb";
+        String profileImg = member.getProfileImg();
+        if (profileImg == null || profileImg.isEmpty()) {
+            profileImg = "https://firebasestorage.googleapis.com/v0/b/kh-react-firebase.firebasestorage.app/o/default-profile-picture-url.jpg?alt=media&token=16b39451-4ee9-4bdd-adc9-78b6cda4d4bb";
         }
 
-        log.info("Fetching profile for memberId={} | Name={} | Email={} | ProfilePicture={}",
-                memberId, member.getName(), member.getEmail(), profilePictureUrl);
+        log.info("Fetching profile for memberId={} | Name={}| NickName={} | Email={} | ProfilePicture={}",
+                memberId, member.getName(), member.getNickName(), member.getEmail(), profileImg);
 
         return new MemberResponseDto(
                 member.getId(),
                 member.getEmail(),
                 member.getName(),
+                member.getNickName(),
                 member.getPhoneNumber(),
                 member.getCurrentCompany(),
                 member.getShowCompany(),
-                profilePictureUrl,
+                profileImg,
                 member.getRole().name()
         );
     }
@@ -211,12 +214,56 @@ public class MemberService {
                         member.getId(),
                         member.getEmail(),
                         member.getName(),
+                        member.getNickName(),
                         member.getPhoneNumber(),
                         member.getCurrentCompany(),
                         member.getShowCompany(),
-                        member.getProfilePictureUrl(),
+                        member.getProfileImg(),
                         member.getRole().name()
                 ))
                 .collect(Collectors.toList());
+    }
+
+
+
+
+
+
+    // 토큰에서 Member 객체를 받아오는 메서드( 클래스 외부에서도 불러올 수 있게 public )
+    public Member convertTokenToEntity(String token) {
+        try{
+            // 토큰 앞에 있는 "Bearer " 제거
+            token = token.replace("Bearer ", "");
+            // token 을 통해 memberId를 담고 있는 객체 Authentication 을 불러옴
+            Authentication authentication = tokenProvider.getAuthentication(token);
+            log.warn("Authentication 의 형태 : {}", authentication);
+            // Name 은 String 으로 되어 있기 때문에 Long으로 바꿔주는 과정이 있어야 타입이 일치
+            Integer id = Integer.parseInt(authentication.getName());
+            Member member = memberRepository.findById(id)
+                    .orElseThrow(()-> new RuntimeException("존재 하지 않는 memberId 입니다."));
+
+            // 이메일을 반환하여 클라이언트에서 처리하도록 함
+            String email = member.getEmail();
+            String nickName = member.getNickName();
+            String profileImg = member.getProfileImg();
+            Integer memberId = member.getId();
+            log.warn("토큰으로부터 얻은 이메일: {}", email);
+            log.warn("토큰으로부터 얻은 닉네임: {}", nickName);
+            log.warn("토큰으로부터 얻은 프로필이미지: {}", profileImg);
+            log.warn("토큰으로부터 얻은 멤버아이디: {}", memberId);
+            log.warn("토큰으로부터 얻은 Member: {}", member);
+            return member;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+    // 채팅 - memberId로 nickName 가져오기
+    public String getNickNameById(Integer id) {
+        return memberRepository.getNickNameById(id);
+    }
+    // 채팅 - memberId로 profileImg 가져오기
+    public String getProfileImgById(Integer id) {
+        return memberRepository.getProfileImgById(id);
     }
 }

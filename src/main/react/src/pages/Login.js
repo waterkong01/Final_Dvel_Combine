@@ -10,7 +10,9 @@ import NaverLoginButton from "../component/NaverLoginButton";
 import KakaoLoginButton from "../component/KakaoLoginButton";
 import styled from "styled-components";
 // 🔹 Import useProfile to allow fetching updated profile data after login
-import { useProfile } from "../pages/ProfileContext";
+import { useProfile } from "./ProfileContext";
+import {Container} from "../design/CommonDesign";
+import {color} from "chart.js/helpers";
 
 const SubmitButton = styled.button`
   width: 100%;
@@ -113,16 +115,7 @@ function Login() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-        background: "#f5f5f5",
-        padding: "20px",
-      }}
-    >
+    <Container className="center">
       <div
         style={{
           background: "#fff",
@@ -200,13 +193,13 @@ function Login() {
         </div>
 
         <div style={{ textAlign: "center", marginTop: "15px" }}>
-          <span>회원이 아니신가요?</span>
+          <span style={{color: "#000"}} >회원이 아니신가요?</span>
           <a href="/signup" style={{ marginLeft: "5px", color: "#007bff" }}>
             회원가입
           </a>
         </div>
       </div>
-    </div>
+    </Container>
   );
 }
 

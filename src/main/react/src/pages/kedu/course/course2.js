@@ -9,7 +9,7 @@ const Content = styled.div`
   border: 1px solid #ccc;
   padding: 150px 0 0 0;
   border-radius: 8px;
-  background-color: rgb(229, 236, 232);
+  //background-color: rgb(229, 236, 232);
   color: black;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 

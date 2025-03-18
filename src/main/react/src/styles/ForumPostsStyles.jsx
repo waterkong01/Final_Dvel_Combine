@@ -11,7 +11,7 @@ export const StyledLink = styled(Link)`
 `;
 
 export const PostsContainer = styled.div`
-  background-color: #f5f6f7;
+  //background-color: #f5f6f7;
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;

@@ -1,3 +1,4 @@
+/*
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import imgLogo1 from "../images/DeveloperMark.jpg";
@@ -19,14 +20,14 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      {/* 사이트 로고 */}
+      {/!* 사이트 로고 *!/}
       <div>
         <Link to="/feed" className="navbar-logo">
           <img src={imgLogo1} alt="로고" className="navbar-logo-image" />
         </Link>
       </div>
 
-      {/* 네비게이션 메뉴 */}
+      {/!* 네비게이션 메뉴 *!/}
       <ul className="navbar-menu">
         <li>
           <Link to="/profile" className="navbar-item">
@@ -60,7 +61,7 @@ function Navbar() {
         </li>
       </ul>
 
-      {/* 로그인/로그아웃 버튼 */}
+      {/!* 로그인/로그아웃 버튼 *!/}
       <button onClick={handleLoginLogout} className="navbar-button">
         {isLoggedIn ? "로그아웃" : "로그인"}
       </button>
@@ -69,3 +70,4 @@ function Navbar() {
 }
 
 export default Navbar;
+*/

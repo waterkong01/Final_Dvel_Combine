@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
  * Forum 레이아웃 컨테이너
  */
 export const ForumContainer = styled.div`
-  background-color: #f5f6f7;
+  //background-color: #f5f6f7;
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;

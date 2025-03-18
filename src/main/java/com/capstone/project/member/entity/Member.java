@@ -45,6 +45,9 @@ public class Member {
     @Column(nullable = false, length = 50)
     private String name; // 사용자 이름
 
+    @Column(name = "nick_name")
+    private String nickName; // 닉네임
+
     @Column(name = "phone_number", unique = true, length = 15)
     private String phoneNumber; // 전화번호
 
@@ -79,8 +82,8 @@ public class Member {
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now(); // 마지막 수정 시간
 
-    @Column(name = "profile_picture_url", length = 255)
-    private String profilePictureUrl; // 프로필 사진 URL
+    @Column(name = "profile_img", length = 255)
+    private String profileImg; // 프로필 사진 URL
 
     // 연관 엔티티 매핑
 
@@ -186,7 +189,7 @@ public class Member {
             Boolean showCompany,
             String provider,
             String providerId,
-            String profilePictureUrl
+            String profileImg
     ) {
         this.email = email;
         this.password = password;
@@ -197,7 +200,7 @@ public class Member {
         this.showCompany = showCompany != null ? showCompany : false;
         this.provider = provider;
         this.providerId = providerId;
-        this.profilePictureUrl = profilePictureUrl;
+        this.profileImg = profileImg;
         this.registeredAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.friends = new ArrayList<>();

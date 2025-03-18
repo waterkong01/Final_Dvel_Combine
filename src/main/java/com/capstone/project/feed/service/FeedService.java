@@ -207,7 +207,7 @@ public class FeedService {
                             .mediaUrl(feed.getMediaUrl())
                             .comments(commentsWithReplies)
                             .isRepost(feed.isRepost())
-                            .profilePictureUrl(memberService.getMemberProfile(feed.getMemberId()).getProfilePictureUrl())
+                            .profilePictureUrl(memberService.getMemberProfile(feed.getMemberId()).getProfileImg())
                             .authorName(memberService.getMemberProfile(feed.getMemberId()).getName())
                             .liked(feedLikeRepository.existsByFeed_FeedIdAndMemberId(feed.getFeedId(), memberId))
                             .build();
@@ -237,7 +237,7 @@ public class FeedService {
         }
 
         MemberResponseDto memberResponse = memberService.getMemberProfile(feed.getMemberId());
-        String profilePictureUrl = memberResponse.getProfilePictureUrl();
+        String profilePictureUrl = memberResponse.getProfileImg();
         String authorName = memberResponse.getName();
 
         boolean liked = currentMemberId != null &&
@@ -284,7 +284,7 @@ public class FeedService {
      */
     private CommentResponseDto mapCommentWithReplies(FeedComment comment, Integer currentMemberId) {
         // 작성자 프로필 사진 및 이름 조회 (기본값 제공)
-        String profilePictureUrl = memberService.getMemberProfile(comment.getMemberId()).getProfilePictureUrl();
+        String profilePictureUrl = memberService.getMemberProfile(comment.getMemberId()).getProfileImg();
         if (profilePictureUrl == null || profilePictureUrl.isEmpty()) {
             profilePictureUrl = "https://example.com/default-profile-picture.jpg";
         }
@@ -328,7 +328,7 @@ public class FeedService {
             return MemberInfoDto.builder()
                     .memberId(memberResponse.getMemberId())
                     .name(memberResponse.getName())
-                    .profilePictureUrl(memberResponse.getProfilePictureUrl())
+                    .profilePictureUrl(memberResponse.getProfileImg())
                     .build();
         } catch (EntityNotFoundException e) {
             return null;

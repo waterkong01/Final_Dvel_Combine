@@ -224,7 +224,7 @@ function JobDetail() {
 
   useEffect(() => {
     // 페이지 로드 시 body의 배경 색상을 설정
-    document.body.style.backgroundColor = "#f5f6f7";
+    // document.body.style.backgroundColor = "#f5f6f7";
 
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBzgO9et2D2Ejimj7KHsCrrR-rR_mhtSvI&callback=initMap`;
@@ -281,7 +281,7 @@ const styles = {
     fontFamily: "'Arial', sans-serif",
     textAlign: "center",
     marginTop: "70px",
-    backgroundColor: "#f5f6f7",
+    // backgroundColor: "#f5f6f7",
   },
   section: {
     marginBottom: "40px",

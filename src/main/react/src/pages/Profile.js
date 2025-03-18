@@ -18,9 +18,9 @@ import { ToastContainer, toast } from "react-toastify"; // Toastify
 
 const Profile = () => {
   // KR: 페이지 로드시 body 배경색 설정
-  useEffect(() => {
+/*  useEffect(() => {
     document.body.style.backgroundColor = "#f5f6f7";
-  }, []);
+  }, []);*/
 
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);

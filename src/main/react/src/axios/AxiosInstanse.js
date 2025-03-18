@@ -1,16 +1,16 @@
 import axios from "axios";
-import Commons from "../utils/Common";
+import Common from "../utils/Common";
 
 // Axios 인스턴스를 생성
 const AxiosInstance = axios.create({
-  baseURL: Commons.KH_DOMAIN, // 기본 URL 설정 (Commons에서 정의된 도메인을 사용)
+  baseURL: Common.KH_DOMAIN, // 기본 URL 설정 (Common에서 정의된 도메인을 사용)
 });
 
 // 요청 인터셉터 추가
 AxiosInstance.interceptors.request.use(
   async (config) => {
     // 액세스 토큰을 가져와 Authorization 헤더에 추가
-    const accessToken = Commons.getAccessToken(); // Commons에서 액세스 토큰을 가져옴
+    const accessToken = Common.getAccessToken(); // Common에서 액세스 토큰을 가져옴
     config.headers.Authorization = `Bearer ${accessToken}`; // Authorization 헤더 설정
     console.log("Authorization Header:", config.headers.Authorization); // 디버그용 출력
     return config; // 요청이 성공적으로 설정되면 반환
@@ -33,10 +33,10 @@ AxiosInstance.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       // 401 Unauthorized 에러 발생 시 토큰 갱신 로직 실행
       console.warn("401 오류: 토큰 갱신 시도 중..."); // 경고 로그 추가
-      const newToken = await Commons.handleUnauthorized(); // Commons의 갱신 로직 호출
+      const newToken = await Common.handleUnauthorized(); // Common의 갱신 로직 호출
       if (newToken) {
         // 갱신된 토큰을 사용하여 원래 요청을 재시도
-        error.config.headers.Authorization = `Bearer ${Commons.getAccessToken()}`;
+        error.config.headers.Authorization = `Bearer ${Common.getAccessToken()}`;
         return AxiosInstance.request(error.config); // 재시도 요청 실행
       }
     }

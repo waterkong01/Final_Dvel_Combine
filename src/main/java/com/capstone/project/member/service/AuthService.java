@@ -70,6 +70,7 @@ public class AuthService {
                 .email(requestDto.getEmail())
                 .password(passwordEncoder.encode(requestDto.getPassword()))
                 .name(requestDto.getName())
+                .nickName(requestDto.getNickname())
                 .phoneNumber(requestDto.getPhoneNumber())
                 .currentCompany(requestDto.getCurrentCompany()) // 기본값 사용
                 .showCompany(requestDto.getShowCompany())         // 공개 여부

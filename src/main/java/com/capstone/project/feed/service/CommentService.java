@@ -58,7 +58,7 @@ public class CommentService {
         feedCommentRepository.save(comment);
         log.info("Comment added successfully: {}", comment);
 
-        String profilePictureUrl = memberService.getMemberProfile(comment.getMemberId()).getProfilePictureUrl();
+        String profilePictureUrl = memberService.getMemberProfile(comment.getMemberId()).getProfileImg();
         String memberName = memberService.getMemberProfile(comment.getMemberId()).getName();
 
         // currentMemberId not available here, so default liked to false.
@@ -81,7 +81,7 @@ public class CommentService {
         feedCommentRepository.save(comment);
         log.info("Comment edited successfully: {}", comment);
 
-        String profilePictureUrl = memberService.getMemberProfile(comment.getMemberId()).getProfilePictureUrl();
+        String profilePictureUrl = memberService.getMemberProfile(comment.getMemberId()).getProfileImg();
         String memberName = memberService.getMemberProfile(comment.getMemberId()).getName();
 
         return new CommentResponseDto(comment, profilePictureUrl, memberName,
@@ -114,7 +114,7 @@ public class CommentService {
         return feedCommentRepository.findByFeedAndParentCommentIsNull(feed)
                 .stream()
                 .map(comment -> {
-                    String profilePictureUrl = memberService.getMemberProfile(comment.getMemberId()).getProfilePictureUrl();
+                    String profilePictureUrl = memberService.getMemberProfile(comment.getMemberId()).getProfileImg();
                     String memberName = memberService.getMemberProfile(comment.getMemberId()).getName();
                     return new CommentResponseDto(comment, profilePictureUrl, memberName,
                             commentLikeRepository.countByComment_CommentId(comment.getCommentId()), false);
@@ -132,7 +132,7 @@ public class CommentService {
         FeedComment comment = feedCommentRepository.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("Comment not found with ID: " + commentId));
 
-        String profilePictureUrl = memberService.getMemberProfile(comment.getMemberId()).getProfilePictureUrl();
+        String profilePictureUrl = memberService.getMemberProfile(comment.getMemberId()).getProfileImg();
         String memberName = memberService.getMemberProfile(comment.getMemberId()).getName();
         Long likesCount = commentLikeRepository.countByComment_CommentId(commentId);
         return new CommentResponseDto(comment, profilePictureUrl, memberName, likesCount, false);
@@ -147,7 +147,7 @@ public class CommentService {
     public List<CommentResponseDto> getCommentsByMemberId(Integer memberId) {
         List<CommentResponseDto> allComments = feedCommentRepository.findByMemberId(memberId).stream()
                 .map(comment -> {
-                    String profilePictureUrl = memberService.getMemberProfile(comment.getMemberId()).getProfilePictureUrl();
+                    String profilePictureUrl = memberService.getMemberProfile(comment.getMemberId()).getProfileImg();
                     String memberName = memberService.getMemberProfile(comment.getMemberId()).getName();
                     return new CommentResponseDto(comment, profilePictureUrl, true, memberName,
                             commentLikeRepository.countByComment_CommentId(comment.getCommentId()), false);
@@ -230,7 +230,7 @@ public class CommentService {
         return feedCommentRepository.findByFeedAndParentCommentIsNull(feed)
                 .stream()
                 .map(comment -> {
-                    String profilePictureUrl = memberService.getMemberProfile(comment.getMemberId()).getProfilePictureUrl();
+                    String profilePictureUrl = memberService.getMemberProfile(comment.getMemberId()).getProfileImg();
                     String memberName = memberService.getMemberProfile(comment.getMemberId()).getName();
                     return new CommentResponseDto(comment, profilePictureUrl, true, memberName,
                             commentLikeRepository.countByComment_CommentId(comment.getCommentId()), false);

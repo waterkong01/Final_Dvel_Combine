@@ -18,10 +18,11 @@ public class MemberResponseDto {
     private Integer memberId;           // 회원 ID
     private String email;               // 이메일
     private String name;                // 이름
+    private String nickname;            // 닉네임
     private String phoneNumber;         // 전화번호
     private String currentCompany;      // 현재 회사명
     private Boolean showCompany;        // 회사명 표시 여부
-    private String profilePictureUrl;   // 프로필 사진 URL (새로운 필드 추가)
+    private String profileImg;   // 프로필 사진 URL (새로운 필드 추가)
     private String role;
 
     /**
@@ -33,10 +34,11 @@ public class MemberResponseDto {
         this.memberId = member.getId();
         this.email = member.getEmail();
         this.name = member.getName();
+        this.nickname = member.getNickName();
         this.phoneNumber = member.getPhoneNumber();
         this.currentCompany = member.getShowCompany() ? member.getCurrentCompany() : "익명의 회사";
         this.showCompany = member.getShowCompany();
-        this.profilePictureUrl = member.getProfilePictureUrl(); // 프로필 사진 URL 추가
+        this.profileImg = member.getProfileImg(); // 프로필 사진 URL 추가
         this.role = member.getRole().name();
     }
 
@@ -45,8 +47,10 @@ public class MemberResponseDto {
         return "MemberResponseDto{" +
                 "memberId=" + memberId +
                 ", name='" + name + '\'' +
+                ", nickname='" + nickname + '\'' +
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", profileImg='" + profileImg + '\'' +
                 '}';
     }
 }
