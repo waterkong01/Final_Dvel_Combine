@@ -66,3 +66,4 @@ src/main/react/yarn-error.log*
 
 # Resources
 src/main/resources/static/staticenv
+src/main/resources/application.properties
