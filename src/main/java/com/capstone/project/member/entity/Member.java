@@ -82,7 +82,7 @@ public class Member {
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now(); // 마지막 수정 시간
 
-    @Column(name = "profile_img", length = 255)
+    @Column(name = "profile_img")
     private String profileImg; // 프로필 사진 URL
 
     // 연관 엔티티 매핑
@@ -176,7 +176,7 @@ public class Member {
      * @param showCompany        회사 공개 여부
      * @param provider           OAuth 제공자
      * @param providerId         OAuth 제공자로부터 받은 고유 ID
-     * @param profilePictureUrl  프로필 사진 URL
+     * @param profileImg  프로필 사진 URL
      */
     @Builder
     public Member(

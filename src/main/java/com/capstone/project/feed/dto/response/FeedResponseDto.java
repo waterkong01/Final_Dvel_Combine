@@ -35,7 +35,7 @@ public class FeedResponseDto {
     private LocalDateTime repostCreatedAt; // 리포스트된 시간
     private String mediaUrl;            // 미디어 파일 URL
     private MemberInfoDto originalPoster; // 원본 게시자 정보 (리포스트일 경우)
-    private String profilePictureUrl;   // 작성자의 프로필 사진 URL
+    private String profileImg;   // 작성자의 프로필 사진 URL
     private String authorName;          // 작성자 이름
     private boolean liked;              // 현재 사용자가 이 피드를 좋아요 했는지 여부
 
@@ -51,14 +51,14 @@ public class FeedResponseDto {
      * @param repostedFrom       리포스트된 피드 ID
      * @param repostedFromContent 리포스트된 피드 내용
      * @param comments           댓글 리스트
-     * @param profilePictureUrl  작성자 프로필 사진 URL
+     * @param profileImg  작성자 프로필 사진 URL
      * @param authorName         작성자 이름
      * @param liked              현재 사용자가 좋아요 했는지 여부
      */
     public FeedResponseDto(Integer feedId, Integer memberId, String content, LocalDateTime createdAt,
                            LocalDateTime updatedAt, Integer likesCount, Integer repostedFrom,
                            String repostedFromContent, List<CommentResponseDto> comments,
-                           String profilePictureUrl, String authorName, boolean liked) {
+                           String profileImg, String authorName, boolean liked) {
         this.feedId = feedId;
         this.memberId = memberId;
         this.content = content;
@@ -68,7 +68,7 @@ public class FeedResponseDto {
         this.repostedFrom = repostedFrom;
         this.repostedFromContent = repostedFromContent;
         this.comments = comments;
-        this.profilePictureUrl = profilePictureUrl;
+        this.profileImg = profileImg;
         this.authorName = authorName;
         this.reposterId = null;
         this.isRepost = false;
@@ -95,7 +95,7 @@ public class FeedResponseDto {
      * @param repostCreatedAt    리포스트 생성 시간
      * @param mediaUrl           미디어 URL
      * @param originalPoster     원본 게시자 정보
-     * @param profilePictureUrl  작성자 프로필 사진 URL
+     * @param profileImg  작성자 프로필 사진 URL
      * @param authorName         작성자 이름
      * @param liked              현재 사용자가 좋아요 했는지 여부
      */
@@ -103,7 +103,7 @@ public class FeedResponseDto {
                            LocalDateTime updatedAt, Integer likesCount, Integer repostedFrom,
                            String repostedFromContent, Integer reposterId, boolean isRepost,
                            List<CommentResponseDto> comments, LocalDateTime repostCreatedAt,
-                           String mediaUrl, MemberInfoDto originalPoster, String profilePictureUrl,
+                           String mediaUrl, MemberInfoDto originalPoster, String profileImg,
                            String authorName, boolean liked) {
         this.feedId = feedId;
         this.memberId = memberId;
@@ -119,7 +119,7 @@ public class FeedResponseDto {
         this.repostCreatedAt = repostCreatedAt;
         this.mediaUrl = mediaUrl;
         this.originalPoster = originalPoster;
-        this.profilePictureUrl = profilePictureUrl;
+        this.profileImg = profileImg;
         this.authorName = authorName;
         this.liked = liked;
     }

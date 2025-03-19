@@ -11,5 +11,5 @@ import lombok.Setter;
 public class MemberInfoDto {
     private Integer memberId; // 회원 ID
     private String name;      // 회원 이름
-    private String profilePictureUrl; // 프로필 사진 URL
+    private String profileImg; // 프로필 사진 URL
 }

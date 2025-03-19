@@ -15,7 +15,7 @@ public class MemberProfileResponseDto {
     private String email;
     private String name;
     private String phoneNumber;
-    private String profilePictureUrl;
+    private String profileImg;
     private String currentCompany;
     private Boolean showCompany;
 

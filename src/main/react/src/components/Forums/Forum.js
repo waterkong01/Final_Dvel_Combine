@@ -39,7 +39,7 @@ const Forum = () => {
         setMemberData({
           name: userInfo.name,
           currentCompany: userInfo.currentCompany,
-          profilePictureUrl: userInfo.profilePictureUrl,
+          profileImg: userInfo.profileImg,
         });
       } else {
         // KR: 로그인하지 않은 경우 토스트 경고 메시지를 출력한 후 2.5초 후에 로그인 페이지로 리디렉션

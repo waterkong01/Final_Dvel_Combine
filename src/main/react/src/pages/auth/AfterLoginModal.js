@@ -168,7 +168,7 @@ const AfterLoginModal = ({ isOpen, closeModal, handleModalLinkClick, darkMode })
   };
 
   const handleMyPage = () => {
-      navigate("/profile/mypage");
+      navigate("/profile");
       closeModal();
   }
 

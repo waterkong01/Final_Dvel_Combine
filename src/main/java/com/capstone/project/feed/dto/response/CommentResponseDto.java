@@ -31,7 +31,7 @@ public class CommentResponseDto {
     private String comment;                // 댓글 내용
     private LocalDateTime createdAt;       // 생성 시간
     private LocalDateTime updatedAt;       // 수정 시간
-    private String profilePictureUrl;      // 작성자의 프로필 사진 URL
+    private String profileImg;      // 작성자의 프로필 사진 URL
     private List<CommentResponseDto> replies; // 대댓글 리스트
     private Long likesCount;               // 댓글 좋아요 수
     private boolean liked;                 // 현재 사용자가 이 댓글을 좋아요 했는지 여부
@@ -46,14 +46,14 @@ public class CommentResponseDto {
      * @param comment           댓글 내용
      * @param createdAt         생성 시간
      * @param updatedAt         수정 시간
-     * @param profilePictureUrl 작성자 프로필 사진 URL
+     * @param profileImg 작성자 프로필 사진 URL
      * @param replies           대댓글 리스트
      * @param likesCount        댓글 좋아요 수
      * @param liked             현재 사용자가 좋아요 했는지 여부
      */
     @Builder
     public CommentResponseDto(Integer commentId, Integer feedId, Integer memberId, String memberName, String comment,
-                              LocalDateTime createdAt, LocalDateTime updatedAt, String profilePictureUrl,
+                              LocalDateTime createdAt, LocalDateTime updatedAt, String profileImg,
                               List<CommentResponseDto> replies, Long likesCount, boolean liked) {
         this.commentId = commentId;
         this.feedId = feedId;
@@ -62,7 +62,7 @@ public class CommentResponseDto {
         this.comment = comment;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.profilePictureUrl = profilePictureUrl;
+        this.profileImg = profileImg;
         this.replies = replies;
         this.likesCount = likesCount;
         this.liked = liked;
@@ -72,12 +72,12 @@ public class CommentResponseDto {
      * FeedComment 엔티티에서 DTO로 변환 (대댓글 제외).
      *
      * @param comment           FeedComment 엔티티
-     * @param profilePictureUrl 작성자 프로필 사진 URL
+     * @param profileImg 작성자 프로필 사진 URL
      * @param memberName        작성자 이름
      * @param likesCount        댓글 좋아요 수
      * @param liked             현재 사용자가 좋아요 했는지 여부
      */
-    public CommentResponseDto(FeedComment comment, String profilePictureUrl, String memberName, Long likesCount, boolean liked) {
+    public CommentResponseDto(FeedComment comment, String profileImg, String memberName, Long likesCount, boolean liked) {
         this.commentId = comment.getCommentId();
         this.feedId = comment.getFeed().getFeedId();
         this.memberId = comment.getMemberId();
@@ -85,7 +85,7 @@ public class CommentResponseDto {
         this.comment = comment.getComment();
         this.createdAt = comment.getCreatedAt();
         this.updatedAt = comment.getUpdatedAt();
-        this.profilePictureUrl = profilePictureUrl;
+        this.profileImg = profileImg;
         this.replies = List.of(); // 기본적으로 빈 리스트
         this.likesCount = likesCount;
         this.liked = liked;
@@ -95,19 +95,19 @@ public class CommentResponseDto {
      * FeedComment 엔티티에서 DTO로 변환 (대댓글 포함).
      *
      * @param comment           FeedComment 엔티티
-     * @param profilePictureUrl 작성자 프로필 사진 URL
+     * @param profileImg 작성자 프로필 사진 URL
      * @param includeReplies    대댓글 포함 여부 (true이면 대댓글도 매핑)
      * @param memberName        작성자 이름
      * @param likesCount        댓글 좋아요 수
      * @param liked             현재 사용자가 좋아요 했는지 여부
      */
-    public CommentResponseDto(FeedComment comment, String profilePictureUrl, boolean includeReplies, String memberName, Long likesCount, boolean liked) {
-        this(comment, profilePictureUrl, memberName, likesCount, liked);
+    public CommentResponseDto(FeedComment comment, String profileImg, boolean includeReplies, String memberName, Long likesCount, boolean liked) {
+        this(comment, profileImg, memberName, likesCount, liked);
         this.replies = includeReplies && comment.getReplies() != null
                 ? comment.getReplies().stream()
                 .map(reply -> new CommentResponseDto(
                         reply,
-                        profilePictureUrl, // 동일 프로필 사진 (실제 상황에서는 각 대댓글마다 가져와야 함)
+                        profileImg, // 동일 프로필 사진 (실제 상황에서는 각 대댓글마다 가져와야 함)
                         true,
                         memberName,
                         likesCount, // 예시로 전달; 실제 좋아요 수는 개별로 계산 필요

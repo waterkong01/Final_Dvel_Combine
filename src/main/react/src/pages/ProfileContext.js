@@ -53,6 +53,7 @@ export const ProfileProvider = ({ children }) => {
       updateProfile({
         memberId: data.memberId,
         name: data.name || "User Name",
+
         email: data.email || "제 3자 로그인",
         phone: data.phoneNumber || "",
         location: data.location || "",

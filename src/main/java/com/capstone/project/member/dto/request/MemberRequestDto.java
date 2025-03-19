@@ -20,7 +20,7 @@ public class MemberRequestDto {
     private String email;
     private String password;
     private String name;
-    private String nickname;
+    private String nickName;
     private String phoneNumber;
     private String currentCompany;
     private Boolean showCompany;
@@ -36,7 +36,7 @@ public class MemberRequestDto {
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .name(name)
-                .nickName(nickname)
+                .nickName(nickName)
                 .phoneNumber(phoneNumber)
                 .currentCompany(currentCompany == null || currentCompany.isEmpty() ? null : currentCompany)
                 .showCompany(showCompany)

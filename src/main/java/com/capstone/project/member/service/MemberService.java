@@ -50,7 +50,7 @@ public class MemberService {
             profileImg = "https://firebasestorage.googleapis.com/v0/b/kh-react-firebase.firebasestorage.app/o/default-profile-picture-url.jpg?alt=media&token=16b39451-4ee9-4bdd-adc9-78b6cda4d4bb";
         }
 
-        log.info("Fetching profile for memberId={} | Name={}| NickName={} | Email={} | ProfilePicture={}",
+        log.info("Fetching profile for memberId={} | Name={}| NickName={} | Email={} | ProfileImg={}",
                 memberId, member.getName(), member.getNickName(), member.getEmail(), profileImg);
 
         return new MemberResponseDto(

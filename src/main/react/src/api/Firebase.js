@@ -1,3 +1,4 @@
+/*
 import firebase from "firebase/compat/app";
 import "firebase/compat/storage";
 
@@ -12,4 +13,4 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-export const storage = firebase.storage();
+export const storage = firebase.storage();*/

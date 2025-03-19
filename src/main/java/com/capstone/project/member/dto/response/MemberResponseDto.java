@@ -18,7 +18,7 @@ public class MemberResponseDto {
     private Integer memberId;           // 회원 ID
     private String email;               // 이메일
     private String name;                // 이름
-    private String nickname;            // 닉네임
+    private String nickName;            // 닉네임
     private String phoneNumber;         // 전화번호
     private String currentCompany;      // 현재 회사명
     private Boolean showCompany;        // 회사명 표시 여부
@@ -34,7 +34,7 @@ public class MemberResponseDto {
         this.memberId = member.getId();
         this.email = member.getEmail();
         this.name = member.getName();
-        this.nickname = member.getNickName();
+        this.nickName = member.getNickName();
         this.phoneNumber = member.getPhoneNumber();
         this.currentCompany = member.getShowCompany() ? member.getCurrentCompany() : "익명의 회사";
         this.showCompany = member.getShowCompany();
@@ -47,7 +47,7 @@ public class MemberResponseDto {
         return "MemberResponseDto{" +
                 "memberId=" + memberId +
                 ", name='" + name + '\'' +
-                ", nickname='" + nickname + '\'' +
+                ", nickname='" + nickName + '\'' +
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", profileImg='" + profileImg + '\'' +

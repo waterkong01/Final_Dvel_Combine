@@ -6,6 +6,9 @@ import "react-toastify/dist/ReactToastify.css";
 import FeedApi from "../../api/FeedApi";
 import { getUserInfo } from "../../axios/AxiosInstanse";
 
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
+
+
 // KR: 이미지 파일 임포트
 import imgLogo1 from "../../images/RefreshButton.png";
 import imgLogo2 from "../../images/DeveloperMark.jpg";
@@ -61,6 +64,8 @@ import {Container} from "../../design/CommonDesign";
 import {MemberInfoContext} from "../../api/provider/MemberInfoContextProvider2";
 import {ChatContext} from "../../api/context/ChatStore";
 import ChattingApi from "../../api/ChattingApi";
+import {storage} from "../../utils/FirebaseConfig";
+import {post} from "axios";
 
 /**
  * 재귀적으로 댓글(또는 대댓글)을 업데이트한다.
@@ -100,7 +105,7 @@ const mergeFeedData = (oldFeed, newFeed) => {
   return {
     ...oldFeed,
     ...newFeed,
-    profilePictureUrl: newFeed.profilePictureUrl || oldFeed.profilePictureUrl,
+    profileImg: newFeed.profileImg || oldFeed.profileImg,
     originalPoster: newFeed.originalPoster || oldFeed.originalPoster,
   };
 };
@@ -167,7 +172,7 @@ const renderReplies = (
           <CommentCard key={reply.commentId || idx}>
             <div style={{ display: "flex", alignItems: "center" }}>
               <img
-                src={reply.profilePictureUrl || imgLogo2}
+                src={reply.profileImg || imgLogo2}
                 alt="답글 작성자 이미지"
                 style={{
                   width: "25px",
@@ -330,6 +335,9 @@ function Feed() {
   const [memberId, setMemberId] = useState(null);
   const [memberData, setMemberData] = useState(null);
 
+  const storage = getStorage();
+  const [profileImgs, setProfileImgs] = useState({});
+
   // KR: 피드, 댓글, 좋아요 상태
   const [likedPosts, setLikedPosts] = useState({});
   const [likeLoading, setLikeLoading] = useState({});
@@ -381,7 +389,7 @@ function Feed() {
         setMemberData({
           name: userInfo.name,
           currentCompany: userInfo.currentCompany,
-          profilePictureUrl: userInfo.profilePictureUrl,
+          profileImg: userInfo.profileImg,
         });
       } else {
         // KR: 로그인하지 않은 경우 토스트 메시지 출력 후 2.5초 후에 로그인 페이지로 리디렉션
@@ -592,8 +600,8 @@ function Feed() {
         newComment.currentCompany = memberData
           ? memberData.currentCompany
           : "미등록 회사";
-        newComment.profilePictureUrl = memberData
-          ? memberData.profilePictureUrl
+        newComment.profileImg = memberData
+          ? memberData.profileImg
           : "";
       }
       setCommentInputs((prev) => ({ ...prev, [feedId]: "" }));
@@ -897,6 +905,27 @@ function Feed() {
     }
   };
 
+  useEffect(() => {
+    const loadProfileImgs = async () => {
+      const newProfileImgs = {};
+
+      for (const post of posts) {
+        try {
+          const imgRef = ref(storage, `profile_images/${post.memberId}`);
+          const imgUrl = await getDownloadURL(imgRef);
+          newProfileImgs[post.memberId] = imgUrl;
+        } catch (error) {
+          console.error("이미지 불러오기 중 오류 : ", error);
+          newProfileImgs[post.memberId] = imgLogo2;
+        }
+      }
+      setProfileImgs(newProfileImgs);
+    };
+    if (posts.length > 0) {
+      loadProfileImgs();
+    }
+  }, [posts]);
+
   return (
     <Container className="center font_color">
       <LayoutContainer>
@@ -952,7 +981,7 @@ function Feed() {
                   >
                     <PostHeader>
                       <AuthorImage
-                          src={post.profilePictureUrl || imgLogo2}
+                          src={profileImgs[post.memberId] || imgLogo2}
                           alt="회원 이미지"
                       />
                       <AuthorDetails>
@@ -1061,7 +1090,7 @@ function Feed() {
                               >
                                 <div style={{ display: "flex", alignItems: "center" }}>
                                   <img
-                                      src={comment.profilePictureUrl || imgLogo2}
+                                      src={comment.profileImg || imgLogo2}
                                       alt="댓글 작성자 이미지"
                                       style={{
                                         width: "30px",
@@ -1296,7 +1325,7 @@ function FriendSuggestions({ memberId }) {
         <FriendItem key={friend.memberId}>
           <FriendInfo>
             <FriendImage
-              src={friend.profilePictureUrl || imgLogo2}
+              src={friend.profileImg || imgLogo2}
               alt="친구 이미지"
             />
             <FriendDetails>

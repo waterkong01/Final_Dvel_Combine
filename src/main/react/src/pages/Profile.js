@@ -332,7 +332,7 @@ const Profile = () => {
           isEditable={true}
           onSave={(value) => updateProfileField("name", value)}
         />
-        <EditableField
+{/*        <EditableField
           content="location"
           value={profileInfo.location}
           isEditable={true}
@@ -343,7 +343,7 @@ const Profile = () => {
           value={profileInfo.phone}
           isEditable={true}
           onSave={(value) => updateProfileField("phone", value)}
-        />
+        />*/}
         <EditableField
           label="회원 소개"
           content="bio"
@@ -394,7 +394,7 @@ const Profile = () => {
             <li key={friend.memberId} className="friend-item">
               <div className="friend-info">
                 <img
-                  src={friend.profilePictureUrl || imgLogo2}
+                  src={friend.profileImg || imgLogo2}
                   alt="친구 이미지"
                   className="friend-image"
                 />
