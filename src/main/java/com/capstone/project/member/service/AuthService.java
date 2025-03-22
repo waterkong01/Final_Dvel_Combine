@@ -9,6 +9,8 @@ import com.capstone.project.member.dto.request.MemberRequestDto;
 import com.capstone.project.member.dto.response.MemberResponseDto;
 import com.capstone.project.member.entity.Member;
 import com.capstone.project.member.repository.MemberRepository;
+import com.capstone.project.myPage.entity.Mypage;
+import com.capstone.project.myPage.service.MypageService;
 import com.capstone.project.oauth2.dto.OAuth2LoginRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +45,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final MypageService mypageService;
+
 
     /**
      * 이메일 등록 여부 확인
@@ -75,6 +79,10 @@ public class AuthService {
                 .currentCompany(requestDto.getCurrentCompany()) // 기본값 사용
                 .showCompany(requestDto.getShowCompany())         // 공개 여부
                 .build();
+
+        // 프로필 생성 (회원 생성 후 자동으로 프로필 생성)
+        Mypage mypage = mypageService.createMypageForMember(member);
+        member.setMypage(mypage);
 
         Member savedMember = memberRepository.save(member);
         return new MemberResponseDto(savedMember);

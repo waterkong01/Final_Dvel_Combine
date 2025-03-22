@@ -30,9 +30,10 @@ public class Profile {
     @OneToOne
     @MapsId // Member 엔티티와의 1:1 관계
     @JoinColumn(name = "member_id")
+    @JsonIgnore
     private Member member;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "bio", columnDefinition = "TEXT")
     private String bio; // 자기소개
 
     @Column
@@ -43,5 +44,17 @@ public class Profile {
 
     @Column(name = "resume_url", length = 2083)
     private String resumeUrl; // 이력서 URL
+
+/*    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Skill> skillList = new ArrayList<>(); // ✅ 초기화 추가
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Career> careerList = new ArrayList<>(); // ✅ 초기화 추가
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Education> educationList = new ArrayList<>(); // ✅ 초기화 추가*/
 
 }

@@ -8,7 +8,8 @@ import com.capstone.project.kedu.entity.edu.MyAcademyEntity2;
 import com.capstone.project.kedu.entity.edu.MyCourseEntity2;
 import com.capstone.project.kedu.entity.mypage.SkillHubEntity2;
 import com.capstone.project.kedu.entity.survey.SurveyEntity2;
-import com.capstone.project.myPage.entity.Profile;
+import com.capstone.project.myPage.entity.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -232,5 +233,20 @@ public class Member {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Mypage mypage;
+
+    // Profile의 profileId를 가져오는 메소드
+    public Integer getMypageId() {
+        return (mypage != null) ? mypage.getMypageId() : null;  // profile이 null일 경우 null을 반환
+    }
+
+    // Member의 memberId를 가져오는 메소드
+    public Integer getId() {
+        return (this.id != null) ? this.id : null;  // memberId가 null이 아니면 반환
     }
 }

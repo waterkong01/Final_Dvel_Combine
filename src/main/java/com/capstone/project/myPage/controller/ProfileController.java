@@ -1,6 +1,5 @@
 package com.capstone.project.myPage.controller;
 
-
 import com.capstone.project.myPage.dto.MemberProfileResponseDto;
 import com.capstone.project.myPage.service.ProfileService;
 import org.springframework.http.ResponseEntity;
@@ -83,5 +82,4 @@ public class ProfileController {
         profileService.updateSkills(skills, memberId);
         return ResponseEntity.ok("Skills updated successfully");
     }
-
 }

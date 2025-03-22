@@ -6,6 +6,8 @@ import com.capstone.project.member.dto.request.MemberRequestDto;
 import com.capstone.project.member.dto.response.MemberResponseDto;
 import com.capstone.project.member.entity.Member;
 import com.capstone.project.member.repository.MemberRepository;
+import com.capstone.project.myPage.entity.Mypage;
+import com.capstone.project.myPage.service.MypageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +33,7 @@ import java.util.stream.Collectors;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final MypageService mypageService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenProvider tokenProvider;
     /**
