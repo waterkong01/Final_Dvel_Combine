@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, {useContext, useEffect, useState} from "react";
+import { useParams } from "react-router-dom";
 import EducationList from "./EducationList";
 import CareerList from "./CareerList";
 import SkillList from "./SkillList";
-import { FaLink } from "react-icons/fa"; // URL 복사 아이콘 추가
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import "../../design/Mypage/MypageDetail.css";
 import MypageApi from "../../api/MypageApi";
 import {Container} from "../../design/CommonDesign";
@@ -13,6 +13,8 @@ import {
   MypageContainer, ProfileImg, SkillBox,
   UserInfoBox
 } from "../../design/Mypage/MypageDetailDesign";
+import {ChattingIcon} from "../../design/Msg/MsgPageDesign";
+import imgLogo2 from "../../images/DeveloperMark.jpg";
 
 const MypageDetail = () => {
   const { mypageId } = useParams();
@@ -22,8 +24,17 @@ const MypageDetail = () => {
   const [activeTab, setActiveTab] = useState("education");
   const [isEditing, setIsEditing] = useState(false);
   const [editedMypageContent, setEditedMypageContent] = useState("");
-  const navigate = useNavigate();
+  const [profileImg, setProfileImg] = useState(imgLogo2);
+  const storage = getStorage();
 
+  const USERINFO_ICON_URL = [
+    "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fedit-text%201.png?alt=media&",  // edit
+    "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fplus1_before%201.png?alt=media&", // add
+    "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fsettings.png?alt=media&", // setting
+    "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fshare%202.png?alt=media&" // share
+  ]
+
+  // Mypage 정보 가져오기
   const fetchMypageDetail = async () => {
     try {
       const data = await MypageApi.getMypageById(mypageId);
@@ -36,6 +47,7 @@ const MypageDetail = () => {
     }
   };
 
+  // Member 정보 가져오기
   const fetchMemberInfo = async () => {
     try {
       const data = await MypageApi.getMemberById(mypageId); // 회원 정보 가져오기
@@ -45,10 +57,37 @@ const MypageDetail = () => {
     }
   };
 
+  // 프로필 이미지 가져오기
+  const fetchProfileImage = async (memberId) => {
+    if (!memberId) return;
+    try {
+      const storageRef = ref(storage, `profile_images/${memberId}`);
+      const url = await getDownloadURL(storageRef);
+      setProfileImg(url);
+    } catch (error) {
+      console.error("프로필 이미지 로드 실패:", error);
+      setProfileImg(imgLogo2); // 실패 시 기본 이미지 사용
+    }
+  };
+
   useEffect(() => {
     fetchMypageDetail();
     fetchMemberInfo(); // 회원 정보도 함께 가져옴
   }, [mypageId]);
+
+  useEffect(() => {
+    if (member?.memberId) {
+      fetchProfileImage(member.memberId);
+    }
+  }, [member]);
+
+  if (loading) {
+    return <div className="loading">로딩 중...</div>;
+  }
+
+  if (!mypage || !member) {
+    return <div className="loading">프로필을 찾을 수 없습니다.</div>;
+  }
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -98,25 +137,11 @@ const MypageDetail = () => {
         {/* 프로필 상단 정보 (사진, 이름, 이메일, URL 복사) */}
         <HalfContainer>
           <UserInfoBox>
-            <ProfileImg
-                src={mypage.profileImage || "/default-profile.png"} // 기본 프로필 이미지 설정
-                alt="Profile"
-            />
-            <div className="profile-right">
-              <div className="profile-info">
-                <h2>{member.name || "사용자 이름"}</h2> {/* 이름 렌더링 */}
-                <p>{member.email || "이메일 미제공"}</p> {/* 이메일 렌더링 */}
-                {/* 팔로워 / 팔로잉 정보 */}
-                <div className="follow-info">
-                  <span>팔로워 {mypage.followers || "NN"}</span>
-                  <span>팔로잉 {mypage.following || "NN"}</span>
-                </div>
-              </div>
-              {/* URL 복사 버튼 */}
-              <button className="copy-url-btn" onClick={copyProfileUrl}>
-                <FaLink />
-              </button>
+            <ProfileImg src={profileImg} alt="Profile"/>
+            <div className="profile-info">
+              <h2>{member.nickName || "사용자 이름"}</h2> {/* 이름 렌더링 */}
             </div>
+            <ChattingIcon src={USERINFO_ICON_URL[3]} onClick={copyProfileUrl}/>
           </UserInfoBox>
 
           {/* 프로필 내용 및 수정 버튼 컨테이너 */}
