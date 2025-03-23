@@ -19,7 +19,6 @@ export const ChatListBox = styled.div`
     overflow-y: auto;
     height: 100%;
     background: #FAFAF8;
-    color: #000;
     &::-webkit-scrollbar {
         width: 16px;
     }
@@ -32,8 +31,6 @@ export const ChatListBox = styled.div`
     &::-webkit-scrollbar-track {
         background: #fafaf8;
         border-radius: 15px;
-        //box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.3);
-        //outline: 5px solid #fafaf8;
     }
 `
 export const ChatUl = styled.ul`

@@ -91,23 +91,24 @@ export const SendButton = styled.img`
 export const MessagesContainer = styled.div`
     display: flex;
     flex-direction: column;
-    //height: calc(100% - 165px);
     width: 100%;
     height: calc(100% - 148px);
     overflow-y: auto;
     transition: height 0.2s ease;
-    padding: 10px;
     &::-webkit-scrollbar {
-        width: 10px;
+        width: 16px;
     }
     &::-webkit-scrollbar-thumb {
         height: 30%;
-        background: #9f8fe4;
-        border-radius: 10px;
+        background: #dbdbdb;
+        border-radius: 15px;
+        //border: 5px solid #fafaf8;
+        border: 5px solid ${(props) => (props.darkMode ? "#363636" : "#fafaf8")};
     }
     &::-webkit-scrollbar-track {
-        background: #FFF;
-        border-radius: 10px;
+        //background: #fafaf8;
+        background: ${(props) => (props.darkMode ? "#363636" : "#fafaf8")};
+        border-radius: 15px;
     }
 `;
 
@@ -181,7 +182,7 @@ export const MsgInput = styled.textarea`
     }
     &::-webkit-scrollbar-thumb {
         height: 30%;
-        background: #9f8fe4;
+        background: #DBDBDB;
         border-radius: 10px;
     }
     &::-webkit-scrollbar-track {

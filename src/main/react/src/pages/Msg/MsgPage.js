@@ -16,7 +16,6 @@ import {
     MsgInputBox,
     MsgInput, SendButton, ExitMsg, ProfileImg
 } from "../../design/Msg/MsgPageDesign";
-import { useNavigate, useParams } from "react-router-dom";
 import Common from "../../utils/Common";
 import { ChatContext } from "../../api/context/ChatStore";
 import ChattingApi from "../../api/ChattingApi";
