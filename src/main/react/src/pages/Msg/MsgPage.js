@@ -20,6 +20,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import Common from "../../utils/Common";
 import { ChatContext } from "../../api/context/ChatStore";
 import ChattingApi from "../../api/ChattingApi";
+import {getDownloadURL, getStorage, ref} from "firebase/storage";
+import imgLogo2 from "../../images/DeveloperMark.jpg";
 
 function formatLocalDateTime(localDateTime) {
     if (localDateTime) {
@@ -48,16 +50,17 @@ const MsgPage = ({ setSelectedPage, darkMode }) => {
     const [roomImg, setRoomImg] = useState("");
     const [nickName, setNickName] = useState("");
     const [profile, setProfile] = useState("");
+    const [profileImg, setProfileImg] = useState(imgLogo2);
     const [regDate, setRegDate] = useState("");
     const ws = useRef(null);    // 웹소켓 객체 생성, 소켓 연결 정보를 유지해야하지만 렌더링과는 무관
     const [memberId, setMemberId] = useState(null);
     const [loggedInUser, setLoggedInUser] = useState(null);
+    const storage = getStorage();
 
     const MSG_ICON_URL = [
         "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fchat%2Fclose%201.png?alt=media",
         "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fchat%2Fclose%202.png?alt=media",
     ]
-
 
     useEffect(() => {
         // 현재 로그인한 사용자 정보 가져오기
@@ -108,15 +111,16 @@ const MsgPage = ({ setSelectedPage, darkMode }) => {
                                 console.error("상대방 닉네임 가져오는 중 오류:", error);
                             }
 
-                            // 상대방의 프로필 가져오기
                             try {
-                                const profileRes = await ChattingApi.getProfileByMemberId(chatPartnerId);
-                                const partnerProfile = profileRes.data;
-                                console.log("상대방의 profile:", profileRes);
-                                setRoomImg(partnerProfile);
-                                setRoomImgs(prev => ({ ...prev, [roomId]: partnerProfile}));
+                                const storageRef = ref(storage, `profile_images/${chatPartnerId}`);
+                                const url = await getDownloadURL(storageRef);
+                                setRoomImg(url);
+                                setRoomImgs(prev => ({ ...prev, [roomId]: url}));
                             } catch (error) {
-                                console.error("상대방 프로필이미지 가져오는 중 오류:", error);
+                                console.error("프로필 이미지 로드 실패:", error);
+                                const defaultImg = imgLogo2; // 기본 이미지
+                                setRoomImg(defaultImg);
+                                setRoomImgs(prev => ({ ...prev, [roomId]: defaultImg }));
                             }
                         } else {
                             console.warn("Invalid data format: ", rsp);
@@ -284,17 +288,7 @@ const MsgPage = ({ setSelectedPage, darkMode }) => {
         //웹소켓 연결되어 있을 때 정보 보내기
         if (ws.current && ws.current.readyState === WebSocket.OPEN && socketConnected) {
             if (inputMsg.trim() !== "") {
-                /*                ws.current.send(
-                                    JSON.stringify({
-                                        type: "TALK",
-                                        roomId: roomId,
-                                        sendMember: sendMember,
-                                        msg: inputMsg,
-                                        profile: profile,
-                                        nickName: nickName,
-                                        regDate: getKSTDate(),
-                                    })
-                                );*/
+
                 const chatData = {
                     type: "TALK",
                     roomId: roomId,
