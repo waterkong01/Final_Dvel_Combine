@@ -45,6 +45,8 @@ import TopBar from "./component/TopBar";
 import SideBar from "./component/SideBar";
 import GlobalStyle from "./styles/GlobalStyle";
 import { ThemeProvider } from "styled-components";
+import MypageDetail from "./pages/mypage/MypageDetail";
+import MypageList from "./pages/mypage/MypageList";
 
 // export const DarkModeContent = createContext();
 
@@ -106,6 +108,9 @@ function App() {
                             />
                             <Route path="/profile" element={<Profile />} />
                             <Route path="/profile/mypage" element={<MyPage />} />
+                            <Route path="/mypage/:mypageId" element={<MypageDetail />} />
+                            <Route path="/mypagelist" element={<MypageList />} />
+
                             <Route path="/feed" element={<Feed />} />
                             <Route path="/jobpost" element={<JobPost />} />
                             <Route path="/job/:id" element={<JobDetail />} />

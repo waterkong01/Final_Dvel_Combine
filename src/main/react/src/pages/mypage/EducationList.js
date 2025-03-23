@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "../../design/Mypage/EducationList.css";
 import EducationApi from "../../api/EducationApi";
+import {EduContainer, EduDate, EduHeader, EduInfo, EduItem} from "../../design/Mypage/EducationListDesign";
+import {ChattingIcon} from "../../design/Msg/MsgPageDesign";
 
 const EducationList = ({ mypageId }) => {
   const [education, setEducation] = useState([]);
@@ -13,6 +15,12 @@ const EducationList = ({ mypageId }) => {
     endDate: "",
   });
   const [isFormVisible, setIsFormVisible] = useState(false); // 교육 추가 폼 보이기/숨기기 상태
+
+  const EDU_ICON_URL = [
+    "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fclose%201.png?alt=media&",  // close
+    "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fplus1_before%201.png?alt=media&", // add
+    "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fedit-text%201.png?alt=media&",  // edit
+  ]
 
   useEffect(() => {
     const fetchEducation = async () => {
@@ -64,17 +72,12 @@ const EducationList = ({ mypageId }) => {
   if (error) return <div className="error">Error fetching education</div>;
 
   return (
-    <div className="education-list">
+    <EduContainer>
       {/* 교육 섹션 헤더 */}
-      <div className="education-list-header">
-        <h3 className="education-title">EDUCATION</h3>
-        <button
-          className="add-education-btn"
-          onClick={() => setIsFormVisible(!isFormVisible)}
-        >
-          <span className="add-education-icon">+</span>
-        </button>
-      </div>
+      <EduHeader>
+        <h3>EDUCATION</h3>
+        <ChattingIcon src={EDU_ICON_URL[1]} onClick={() => setIsFormVisible(!isFormVisible)}/>
+      </EduHeader>
 
       {/* 교육 추가 폼 */}
       {isFormVisible && (
@@ -116,19 +119,20 @@ const EducationList = ({ mypageId }) => {
       {education.length === 0
         ? ""
         : education.map((edu) => (
-            <div key={edu.id} className="education-item">
-              <div className="education-header">
-                <h3>{edu.schoolName}</h3>
-                <p>{edu.degree}</p>
-              </div>
-              <div className="education-dates">
-                <span className="start-date">
+            <EduItem key={edu.id}>
+              <EduInfo>
+                <span>{edu.schoolName}</span>
+                <span>-</span>
+                <span>{edu.degree}</span>
+              </EduInfo>
+              <EduDate>
+                <span>
                   {edu.startDate} - {edu.endDate}
                 </span>
-              </div>
-            </div>
+              </EduDate>
+            </EduItem>
           ))}
-    </div>
+    </EduContainer>
   );
 };
 

@@ -8,20 +8,23 @@ import "../../design/Mypage/MypageDetail.css";
 import MypageApi from "../../api/MypageApi";
 import {Container} from "../../design/CommonDesign";
 import {
-  BioBox,
-  HalfContainer,
-  MypageContainer, ProfileImg, SkillBox,
+  BioBox, BioContent, HalfBox,
+  HalfContainer, IconBox,
+  MypageContainer, ProfileImg, SkillBox, Tab, TabBox, TabsContent,
   UserInfoBox
 } from "../../design/Mypage/MypageDetailDesign";
 import {ChattingIcon} from "../../design/Msg/MsgPageDesign";
 import imgLogo2 from "../../images/DeveloperMark.jpg";
+import {SkillHeader} from "../../design/Mypage/SkillListDesign";
+import {EduHeader} from "../../design/Mypage/EducationListDesign";
+import FeedList from "./FeedList";
 
 const MypageDetail = () => {
   const { mypageId } = useParams();
   const [mypage, setMypage] = useState(null);
   const [member, setMember] = useState(null); // 회원 정보 상태 추가
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("education");
+  const [activeTab, setActiveTab] = useState("eduandcareer");
   const [isEditing, setIsEditing] = useState(false);
   const [editedMypageContent, setEditedMypageContent] = useState("");
   const [profileImg, setProfileImg] = useState(imgLogo2);
@@ -137,24 +140,25 @@ const MypageDetail = () => {
         {/* 프로필 상단 정보 (사진, 이름, 이메일, URL 복사) */}
         <HalfContainer>
           <UserInfoBox>
-            <ProfileImg src={profileImg} alt="Profile"/>
-            <div className="profile-info">
-              <h2>{member.nickName || "사용자 이름"}</h2> {/* 이름 렌더링 */}
-            </div>
-            <ChattingIcon src={USERINFO_ICON_URL[3]} onClick={copyProfileUrl}/>
+            <HalfBox>
+              <ProfileImg src={profileImg} alt="Profile"/>
+              <span>{member.nickName || "사용자 이름"}</span>
+            </HalfBox>
+            <HalfBox>
+              <ChattingIcon src={USERINFO_ICON_URL[3]} onClick={copyProfileUrl}/>
+              <ChattingIcon src={USERINFO_ICON_URL[2]}/>
+            </HalfBox>
           </UserInfoBox>
 
           {/* 프로필 내용 및 수정 버튼 컨테이너 */}
           <BioBox>
-            {/* 수정 버튼 */}
-            <div className="edit-buttons">
-              <button className="edit-btn" onClick={handleEdit}>
-                +
-              </button>
-            </div>
-
+            <EduHeader>
+              <h3>SELF-INTRODUCTION</h3>
+              {/* + 버튼 클릭 시 기술 추가 폼 토글 */}
+              <ChattingIcon src={USERINFO_ICON_URL[0]} onClick={handleEdit}/>
+            </EduHeader>
             {/* 프로필 내용 */}
-            <div className="profile-content">
+            <BioContent>
               {isEditing ? (
                   <textarea
                       value={editedMypageContent}
@@ -163,9 +167,9 @@ const MypageDetail = () => {
                       style={{ width: "100%" }}
                   />
               ) : (
-                  <p>{mypage.mypageContent}</p> // 기본 출력
+                  <span>{mypage.mypageContent}</span> // 기본 출력
               )}
-            </div>
+            </BioContent>
 
             {/* 편집 모드일 때만 저장/취소 버튼 표시 */}
             {isEditing && (
@@ -181,32 +185,35 @@ const MypageDetail = () => {
           </BioBox>
 
           {/* Skill List */}
-          <SkillBox>
-            <SkillList mypageId={mypageId} />
-          </SkillBox>
+          <SkillList mypageId={mypageId} />
         </HalfContainer>
-        <HalfContainer>
+        <HalfContainer className="bottom">
           {/* 탭 메뉴 */}
-          <div className="tabs-container">
-            <button
-                className={`tab ${activeTab === "education" ? "active" : ""}`}
-                onClick={() => handleTabChange("education")}
+          <TabBox>
+            <Tab
+                className={`tab left ${activeTab === "eduandcareer" ? "active" : ""}`}
+                onClick={() => handleTabChange("eduandcareer")}
             >
-              학력
-            </button>
-            <button
-                className={`tab ${activeTab === "career" ? "active" : ""}`}
-                onClick={() => handleTabChange("career")}
+              학력 및 경력
+            </Tab>
+            <Tab
+                className={`tab right ${activeTab === "feed" ? "active" : ""}`}
+                onClick={() => handleTabChange("feed")}
             >
-              경력
-            </button>
-          </div>
+              게시물
+            </Tab>
+          </TabBox>
 
           {/* 탭 콘텐츠 */}
-          <div className="tabs-content">
-            {activeTab === "education" && <EducationList mypageId={mypageId} />}
-            {activeTab === "career" && <CareerList mypageId={mypageId} />}
-          </div>
+          <TabsContent>
+            {activeTab === "eduandcareer" && (
+                <>
+                  <EducationList mypageId={mypageId} />
+                  <CareerList mypageId={mypageId} />
+                </>
+            )}
+            {activeTab === "feed" && <FeedList mypageId={mypageId} />}
+          </TabsContent>
         </HalfContainer>
       </MypageContainer>
     </Container>

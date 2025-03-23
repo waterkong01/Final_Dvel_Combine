@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "../../design/Mypage/CareerList.css";
 import CareerApi from "../../api/CareerApi";
+import {ChattingIcon} from "../../design/Msg/MsgPageDesign";
+import {EduDate, EduHeader, EduInfo, EduItem} from "../../design/Mypage/EducationListDesign";
 
 const CareerList = ({ mypageId }) => {
   const [careers, setCareers] = useState([]);
@@ -13,6 +15,12 @@ const CareerList = ({ mypageId }) => {
     endDate: "",
   });
   const [isFormVisible, setIsFormVisible] = useState(false); // 경력 추가 폼 보이기/숨기기 상태
+
+  const CAREER_ICON_URL = [
+    "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fclose%201.png?alt=media&",  // close
+    "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fplus1_before%201.png?alt=media&", // add
+    "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fedit-text%201.png?alt=media&",  // edit
+  ]
 
   useEffect(() => {
     const fetchCareers = async () => {
@@ -62,17 +70,12 @@ const CareerList = ({ mypageId }) => {
   if (error) return <div className="error">Error fetching careers</div>;
 
   return (
-    <div className="career-list">
+    <div>
       {/* 경력 섹션 헤더 */}
-      <div className="career-list-header">
-        <h3 className="career-title">CAREER</h3>
-        <button
-          className="add-career-btn"
-          onClick={() => setIsFormVisible(!isFormVisible)}
-        >
-          <span className="add-career-icon">+</span>
-        </button>
-      </div>
+      <EduHeader>
+        <h3>CAREER</h3>
+        <ChattingIcon src={CAREER_ICON_URL[1]} onClick={() => setIsFormVisible(!isFormVisible)}/>
+      </EduHeader>
 
       {/* 경력 추가 폼 */}
       {isFormVisible && (
@@ -114,17 +117,18 @@ const CareerList = ({ mypageId }) => {
       {careers.length === 0
         ? ""
         : careers.map((career) => (
-            <div key={career.id} className="career-item">
-              <div className="career-header">
-                <h3>{career.companyName}</h3>
-                <p>{career.jobName}</p>
-              </div>
-              <div className="career-dates">
+            <EduItem key={career.id}>
+              <EduInfo>
+                <span>{career.companyName}</span>
+                <span>-</span>
+                <span>{career.jobName}</span>
+              </EduInfo>
+              <EduDate>
                 <span className="start-date">
                   {career.startDate} - {career.endDate}
                 </span>
-              </div>
-            </div>
+              </EduDate>
+            </EduItem>
           ))}
     </div>
   );

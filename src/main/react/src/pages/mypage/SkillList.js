@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
 import "../../design/Mypage/SkillList.css";
-import SkillApi from "../../api/SkillApi"; // 스타일 적용
+import SkillApi from "../../api/SkillApi";
+import {AddSkillBox, SkillBox, SkillHeader, SkillIcon, SkillListContainer} from "../../design/Mypage/SkillListDesign";
+import {ChattingIcon} from "../../design/Msg/MsgPageDesign";
+import {EduHeader} from "../../design/Mypage/EducationListDesign"; // 스타일 적용
 
 const SkillList = ({ mypageId }) => {
   const [skills, setSkills] = useState([]); // 기술 목록 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [newSkill, setNewSkill] = useState(""); // 새로운 기술 입력 상태
   const [isAddingSkill, setIsAddingSkill] = useState(false); // 기술 추가 폼 보이기/숨기기 상태
+
+  const SKILL_ICON_URL = [
+    "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fclose%201.png?alt=media&",  // close
+    "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fplus1_before%201.png?alt=media&", // add
+    "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fedit-text%201.png?alt=media&",  // edit
+  ]
 
   // 기술 목록 가져오는 함수
   const fetchSkills = async () => {
@@ -43,39 +52,34 @@ const SkillList = ({ mypageId }) => {
   }
 
   return (
-    <div className="skill-list-container">
-      <div className="skill-list-header">
+    <SkillListContainer>
+      <EduHeader>
         <h3>SKILL</h3>
         {/* + 버튼 클릭 시 기술 추가 폼 토글 */}
-        <button
-          className="add-skill-btn"
-          onClick={() => setIsAddingSkill(!isAddingSkill)}
-        >
-          +
-        </button>
-      </div>
+        <ChattingIcon src={SKILL_ICON_URL[2]} onClick={() => setIsAddingSkill(!isAddingSkill)}/>
+      </EduHeader>
 
       {/* 기술 추가 입력란 */}
       {isAddingSkill && (
-        <div className="add-skill">
+        <AddSkillBox>
           <input
             type="text"
             value={newSkill}
             onChange={(e) => setNewSkill(e.target.value)}
-            placeholder="새로운 기술을 입력하세요"
+            placeholder="내 스킬을 입력해 주세요"
           />
-          <button onClick={addSkill}>기술 추가</button>
-        </div>
+          <ChattingIcon src={SKILL_ICON_URL[1]} onClick={addSkill}/>
+        </AddSkillBox>
       )}
 
-      <div className="skill-ellipses">
+      <SkillBox>
         {skills.map((skill) => (
-          <div className="skill-ellipse" key={skill.id}>
+          <SkillIcon key={skill.id}>
             {skill.skillName}
-          </div>
+          </SkillIcon>
         ))}
-      </div>
-    </div>
+      </SkillBox>
+    </SkillListContainer>
   );
 };
 

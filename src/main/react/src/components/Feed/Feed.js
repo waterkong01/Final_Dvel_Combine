@@ -866,32 +866,20 @@ function Feed() {
     try {
       // 현재 로그인한 사용자와 post 작성자의 채팅방이 있는지 확인
       const existingChatRoom = chatRooms.find(room =>
-/*          (room.senderId === memberId && room.receiverId === post.memberId) ||
-          (room.senderId === post.memberId && room.receiverId === memberId)*/
           (room.senderId === sender && room.receiverId === receiver) ||
           (room.senderId === receiver && room.receiverId === sender)
       );
 
       if (existingChatRoom) {
-/*        setIsMenuOpen(false);
-        // 기존 채팅방이 존재하면 해당 채팅방으로 이동
-        setRoomId(existingChatRoom.roomId);
-        navigate("/msg");
-        setSelectedPage("chatting");*/
         navigate("/msg", {
           state: {selectedPage: "chatting", roomId: existingChatRoom.roomId}
         });
       } else {
-        // setIsMenuOpen(false);
         // 기존 채팅방이 없으면 새로운 채팅방 생성 후 이동
         const newChatRoom = await ChattingApi.chatCreate(sender, receiver);
-        // const newChatRoom = await ChattingApi.chatCreate(memberId, post.memberId);
         console.log("새로운 채팅방 생성됨:", newChatRoom);
 
         if (newChatRoom && newChatRoom.roomId) {
-/*          setRoomId(newChatRoom.roomId);
-          navigate("/msg");
-          setSelectedPage("chatting");*/
           navigate("/msg", {
             state: {selectedPage: "chatting", roomId: newChatRoom.roomId}
           });
