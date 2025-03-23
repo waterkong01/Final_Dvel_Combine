@@ -1,7 +1,6 @@
 import React from "react";
 import { NAVER_AUTH_URL } from "../utils/NaverAuthConfig";
 import OAuth2Button from "../styles/OAuth2Button";
-import NaverIcon from "../images/naver_login_Icon.png";
 
 const NaverLoginButton = () => {
   const handleLoginClick = () => {
@@ -13,39 +12,20 @@ const NaverLoginButton = () => {
   return (
     <OAuth2Button
       onClick={handleLoginClick}
-      style={{
-        backgroundColor: "#1ec800",
-        color: "#fff",
-        height: "40px",
-        display: "flex",
-        alignItems: "center",
-        transition: "background-color 0.3s, opacity 0.3s", // 버튼의 hover 효과에 대한 전환 추가
-      }}
     >
       <div
         style={{
-          height: "100%",
+          height: "75px",
           display: "flex",
           alignItems: "center",
-          marginRight: "10px",
         }}
       >
         <img
-          src={NaverIcon}
-          alt="네이버 아이콘"
-          style={{ height: "100%", width: "auto" }}
+          src="https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Flogin%2F%E1%84%82%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%87%E1%85%A5%20%E1%84%85%E1%85%A9%E1%84%80%E1%85%A9.png?alt=media"
+          alt="Naver Login"
+          style={{ height: "75px" }}
         />
       </div>
-      <span
-        style={{
-          flex: 1,
-          textAlign: "center",
-          opacity: 1, // 글씨를 항상 불투명하게 설정
-          transition: "opacity 0.3s", // 글씨의 opacity도 전환 효과를 주어 부드럽게 변하게 설정
-        }}
-      >
-        네이버 로그인
-      </span>
     </OAuth2Button>
   );
 };

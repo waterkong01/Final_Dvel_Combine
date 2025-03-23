@@ -7,6 +7,7 @@ import "../css/SignUp.css";
 import EmailVerification from "./kedu/course/component/EmailVerification";
 import Modal03 from "../component/Modal03";
 import {Container} from "../design/CommonDesign";
+import {SignupContainer, SubmitButton, TermsBox} from "../design/SignUpDesign";
 
 function SignUp() {
   const navigate = useNavigate();
@@ -214,11 +215,10 @@ function SignUp() {
   return (
     <>
       <Container className="center font_color">
-        <div className="signup-box">
-          <h2>회원가입</h2>
+        <SignupContainer>
           <form onSubmit={handleSubmit}>
             <div>
-              <label>이메일</label>
+              <label>EMAIL</label>
               <input
                 type="email"
                 value={email}
@@ -251,13 +251,13 @@ function SignUp() {
               )}
             </div>
             <div>
-              <label>비밀번호</label>
+              <label>PW</label>
               <input
                 type="password"
                 value={password}
                 onChange={handlePasswordChange}
                 required
-                placeholder="8자리 이상, 특수문자 포함"
+                placeholder="비밀번호를 입력하세요. (8자리 이상, 특수문자와 숫자 포함)"
               />
               <br />
               {password && (
@@ -271,12 +271,13 @@ function SignUp() {
               )}
             </div>
             <div>
-              <label>비밀번호 확인</label>
+              <label>PW CHECK</label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
                 required
+                placeholder="비밀번호를 한 번 더 입력하세요."
               />
               <br />
               {confirmPassword && (
@@ -290,25 +291,27 @@ function SignUp() {
               )}
             </div>
             <div>
-              <label>이름</label>
+              <label>NAME</label>
               <input
                 type="text"
                 value={name}
+                placeholder="이름을 입력하세요."
                 onChange={handleNameChange}
                 required
               />
             </div>
             <div>
-              <label>닉네임</label>
+              <label>NICKNAME</label>
               <input
                   type="text"
                   value={nickName}
                   onChange={handleNickNameChange}
                   required
+                  placeholder="닉네임을 입력하세요."
               />
               <br />
               {nickName && !isNickNameValid && (
-                  <span className="error-message">
+                  <span className="message error">
                   ❌ 닉네임은 3자리 이상 10자리 이하여야 합니다.
                 </span>
               )}
@@ -326,13 +329,14 @@ function SignUp() {
               )}
             </div>
             <div>
-              <label>전화번호</label>
+              <label>PHONE</label>
               <input
                 type="tel"
                 value={phoneNumber}
                 onChange={handlePhoneNumberChange}
-                placeholder="010-1234-5678"
+                placeholder="전화번호를 입력하세요 (-(하이픈) 제외 13자리"
               />
+              <br/>
               {phoneNumber && (
                 <span
                   className={`message ${
@@ -345,19 +349,7 @@ function SignUp() {
                 </span>
               )}
             </div>
-            <div>
-              <label>현재 회사</label>
-              <input
-                type="text"
-                value={currentCompany}
-                onChange={(e) => setCurrentCompany(e.target.value)}
-                placeholder="재직 중인 회사가 없다면 공란으로 비워주세요."
-              />
-            </div>
-            <div className="terms-checkbox">
-              <button type="button" onClick={handleOpenModal}>
-                <h3>회원가입 약관 (자세히보기)</h3>
-              </button>
+            <TermsBox>
               <label>
                 약관 동의
                 <input
@@ -366,12 +358,15 @@ function SignUp() {
                   onChange={() => setIsAgreed(!isAgreed)}
                 />
               </label>
-            </div>
-            <button id="signup-btn" type="submit" disabled>
+              <button type="button" onClick={handleOpenModal}>
+                <span>회원가입 약관 (자세히보기)</span>
+              </button>
+            </TermsBox>
+            <SubmitButton id="signup-btn" type="submit" disabled>
               회원가입
-            </button>
+            </SubmitButton>
           </form>
-        </div>
+        </SignupContainer>
       </Container>
       <TermsOfServiceModal
         isOpen={showModal}

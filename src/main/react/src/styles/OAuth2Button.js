@@ -3,21 +3,13 @@
 const OAuth2Button = ({ onClick, href, children, style = {} }) => {
   const defaultStyle = {
     display: "inline-block",
-    width: "100%",
-    padding: "10px",
-    color: "#fff",
+    background: "none",
+    width: "75px",
     textAlign: "center",
     border: "none",
-    borderRadius: "4px",
     cursor: "pointer",
     textDecoration: "none",
-    marginTop: "10px",
     boxSizing: "border-box",
-    transition: "background-color 0.3s, opacity 0.3s",
-  };
-
-  const hoverStyle = {
-    opacity: 0.8,
   };
 
   const combinedStyle = {
@@ -31,8 +23,6 @@ const OAuth2Button = ({ onClick, href, children, style = {} }) => {
       <a
         href={href}
         style={combinedStyle}
-        onMouseEnter={(e) => (e.target.style.opacity = 0.7)}
-        onMouseLeave={(e) => (e.target.style.opacity = 1)}
       >
         {children}
       </a>
@@ -43,8 +33,6 @@ const OAuth2Button = ({ onClick, href, children, style = {} }) => {
     <button
       onClick={onClick}
       style={combinedStyle}
-      onMouseEnter={(e) => (e.target.style.opacity = 0.7)}
-      onMouseLeave={(e) => (e.target.style.opacity = 1)}
     >
       {children}
     </button>

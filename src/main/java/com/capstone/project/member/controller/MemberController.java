@@ -75,11 +75,6 @@ public class MemberController {
         return memberService.getSuggestedFriends(memberId);
     }
 
-
-
-
-
-
     // 토큰에서 nickName 가져오기
     @GetMapping("/nickName")
     public ResponseEntity<String> getNickNameFromToken(@RequestHeader(value = "Authorization", required = false) String token) {

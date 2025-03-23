@@ -7,6 +7,7 @@ export const Container = styled.div`
     width: calc(100dvw - 80px);
     display: flex;
     height: calc(100dvh - 80px);
+    overflow-y: scroll;
     &.center {
         align-items: center;
         justify-content: center;

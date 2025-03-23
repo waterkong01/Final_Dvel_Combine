@@ -83,7 +83,7 @@ const EducationList = ({ mypageId }) => {
   };
 
   if (loading) return <div className="loading">Loading...</div>;
-  if (error) return <div className="error">Error fetching education</div>;
+  if (error) return <div className="edu-error">Error fetching education</div>;
 
   const isOwner = loggedInUser === Number(mypageId);
 

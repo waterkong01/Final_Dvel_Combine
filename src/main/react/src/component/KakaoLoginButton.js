@@ -1,35 +1,29 @@
 import React from "react";
 import { KAKAO_AUTH_URL } from "../utils/KakaoAuthConfig";
 import OAuth2Button from "../styles/OAuth2Button";
-import KakaoIcon from "../images/kakao_login_large.png";
 
 const KakaoLoginButton = () => {
   return (
     <OAuth2Button
       href={KAKAO_AUTH_URL}
       style={{
-        backgroundColor: "#FFEB00", // 카카오 기본 색상
-        color: "black",
-        height: "40px",
         display: "flex",
         alignItems: "center",
       }}
     >
       <div
         style={{
-          height: "100%",
+          height: "75px",
           display: "flex",
           alignItems: "center",
-          marginRight: "10px",
         }}
       >
         <img
-          src={KakaoIcon}
-          alt="카카오 아이콘"
-          style={{ height: "100%", width: "auto" }}
+          src="https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Flogin%2F%E1%84%8F%E1%85%A1%E1%84%8F%E1%85%A1%E1%84%8B%E1%85%A9%20%E1%84%85%E1%85%A9%E1%84%80%E1%85%A9.png?alt=media"
+          alt="Kakao Login"
+          style={{ height: "75px" }}
         />
       </div>
-      <span style={{ flex: 1, textAlign: "center" }}>카카오 로그인하기</span>
     </OAuth2Button>
   );
 };

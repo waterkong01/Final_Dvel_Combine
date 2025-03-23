@@ -81,7 +81,7 @@ const CareerList = ({ mypageId }) => {
   };
 
   if (loading) return <div className="loading">Loading...</div>;
-  if (error) return <div className="error">Error fetching careers</div>;
+  if (error) return <div className="career-error">Error fetching careers</div>;
 
   const isOwner = loggedInUser === Number(mypageId);
 

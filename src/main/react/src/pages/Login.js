@@ -13,21 +13,8 @@ import styled from "styled-components";
 import { useProfile } from "./ProfileContext";
 import {Container} from "../design/CommonDesign";
 import {color} from "chart.js/helpers";
-
-const SubmitButton = styled.button`
-  width: 100%;
-  padding: 10px;
-  background-color: #333;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #555;
-  }
-`;
+import {LoginContainer, SubmitButton, ThirdLoginBox} from "../design/LoginDesign";
+import GithubLoginButton from "../component/GithubLoginButton";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -116,59 +103,34 @@ function Login() {
 
   return (
     <Container className="center">
-      <div
-        style={{
-          background: "#fff",
-          padding: "20px",
-          borderRadius: "8px",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          maxWidth: "400px",
-          width: "100%",
-        }}
-      >
-        <h2 style={{ textAlign: "center", marginBottom: "20px" }}>로그인</h2>
-
+      <LoginContainer>
         {/* 로그인 폼 */}
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "15px" }}>
+          <div className="input_box">
             <label
               htmlFor="email"
-              style={{ display: "block", marginBottom: "5px" }}
             >
-              이메일
+              EMAIL
             </label>
             <input
               type="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "10px",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-              }}
               placeholder="이메일을 입력하세요"
             />
           </div>
-          <div style={{ marginBottom: "15px" }}>
+          <div className="input_box">
             <label
               htmlFor="password"
-              style={{ display: "block", marginBottom: "5px" }}
             >
-              비밀번호
+              PW
             </label>
             <input
               type="password"
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "10px",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-              }}
               placeholder="비밀번호를 입력하세요"
             />
           </div>
@@ -179,26 +141,23 @@ function Login() {
               {error}
             </div>
           )}
+          <a href="/signup" className="sign">
+            회원가입
+          </a>
           <SubmitButton type="submit">로그인</SubmitButton>
         </form>
 
         {/* 제3자 로그인 버튼들 */}
-        <div style={{ marginTop: "20px", textAlign: "center" }}>
+        <ThirdLoginBox>
           <GoogleLoginButton
             onSuccess={handleGoogleLoginSuccess}
             onError={handleGoogleLoginError}
           />
           <NaverLoginButton />
           <KakaoLoginButton />
-        </div>
-
-        <div style={{ textAlign: "center", marginTop: "15px" }}>
-          <span style={{color: "#000"}} >회원이 아니신가요?</span>
-          <a href="/signup" style={{ marginLeft: "5px", color: "#007bff" }}>
-            회원가입
-          </a>
-        </div>
-      </div>
+          <GithubLoginButton />
+        </ThirdLoginBox>
+      </LoginContainer>
     </Container>
   );
 }
