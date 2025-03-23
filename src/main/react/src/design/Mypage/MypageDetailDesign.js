@@ -42,6 +42,12 @@ export const HalfBox = styled.div`
         font-size: 1.2em;
         font-weight: bold;
     }
+    & button {
+        background: #DBDBDB;
+        border: none;
+        padding: 0.8em 1em;
+        border-radius: 10px;
+    }
 `
 
 export const BioBox = styled.div`

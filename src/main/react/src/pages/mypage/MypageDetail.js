@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import { useParams } from "react-router-dom";
+import React, {useContext, useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import EducationList from "./EducationList";
 import CareerList from "./CareerList";
 import SkillList from "./SkillList";
@@ -19,6 +19,8 @@ import {EduHeader} from "../../design/Mypage/EducationListDesign";
 import FeedList from "./FeedList";
 import {FeedBottom} from "../../design/Mypage/FeedListDesign";
 import Common from "../../utils/Common";
+import ChattingApi from "../../api/ChattingApi";
+import {ChatContext} from "../../api/context/ChatStore";
 
 const MypageDetail = () => {
   const { mypageId } = useParams();
@@ -31,6 +33,12 @@ const MypageDetail = () => {
   const [profileImg, setProfileImg] = useState(imgLogo2);
   const storage = getStorage();
   const [loggedInUser, setLoggedInUser] = useState(null);
+  // 채팅
+  const {setRoomId, setIsMenuOpen, setSelectedPage} = useContext(ChatContext);
+  const [chatRooms, setChatRooms] = useState([]);
+  const navigate = useNavigate();
+  const [memberId, setMemberId] = useState(null);
+  // 채팅
 
   const USERINFO_ICON_URL = [
     "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fedit-text%201.png?alt=media&",  // edit
@@ -82,7 +90,7 @@ const MypageDetail = () => {
         const response = await Common.getTokenByMemberId();
         const memberId = response.data;
         setLoggedInUser(memberId);
-        console.log("로그인한 memberId:", typeof memberId);
+        console.log("로그인한 memberId:", memberId);
       } catch (e) {
         console.error("로그인한 사용자 정보를 가져오는 중 오류 발생:", e);
       }
@@ -150,6 +158,50 @@ const MypageDetail = () => {
 
   const isOwner = loggedInUser === Number(mypageId);
 
+  const privateChat = async (mypage) => {
+    if (!loggedInUser) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    const sender = loggedInUser;
+    const receiver = Number(mypage.mypageId);
+
+    if (sender === receiver) {
+      alert("본인과는 채팅할 수 없습니다.");
+      return;
+    }
+
+    try {
+      // 현재 로그인한 사용자와 mypage 작성자의 채팅방이 있는지 확인
+      const existingChatRoom = chatRooms.find(room =>
+          (room.senderId === sender && room.receiverId === receiver) ||
+          (room.senderId === receiver && room.receiverId === sender)
+      );
+
+      if (existingChatRoom) {
+        navigate("/msg", {
+          state: {selectedPage: "chatting", roomId: existingChatRoom.roomId}
+        });
+      } else {
+        // 기존 채팅방이 없으면 새로운 채팅방 생성 후 이동
+        const newChatRoom = await ChattingApi.chatCreate(sender, receiver);
+        console.log("새로운 채팅방 생성됨:", newChatRoom);
+
+        if (newChatRoom && newChatRoom.roomId) {
+          navigate("/msg", {
+            state: {selectedPage: "chatting", roomId: newChatRoom.roomId}
+          });
+        } else {
+          alert("채팅방 생성에 실패했습니다.");
+        }
+      }
+    } catch (error) {
+      console.error("채팅방 확인 또는 생성 중 오류 발생:", error);
+      alert("채팅을 시작하는 데 실패했습니다.");
+    }
+  };
+
   return (
     <Container className="center">
       <MypageContainer>
@@ -159,6 +211,9 @@ const MypageDetail = () => {
             <HalfBox>
               <ProfileImg src={profileImg} alt="Profile"/>
               <span>{member.nickName || "사용자 이름"}</span>
+              {!isOwner && ( // 본인이 아닐 때만 버튼 보이기
+                  <button onClick={() => privateChat(mypage)}>1:1 채팅하기</button>
+              )}
             </HalfBox>
             <HalfBox>
               <ChattingIcon src={USERINFO_ICON_URL[3]} onClick={copyProfileUrl}/>
