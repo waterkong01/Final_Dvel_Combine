@@ -28,7 +28,7 @@ export const AddSkillBox = styled.div`
         border-radius: 5px;
         background-color: #fff;
         color: #333;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
     }
     & input:focus {outline: none;}
     & button {
@@ -68,4 +68,9 @@ export const SkillIcon = styled.div`
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     border: none;
     padding: 0 15px;
+    & img {
+        margin-left: 1em;
+        width: 15px;
+        cursor: pointer;
+    }
 `

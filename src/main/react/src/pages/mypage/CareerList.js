@@ -3,11 +3,13 @@ import "../../design/Mypage/CareerList.css";
 import CareerApi from "../../api/CareerApi";
 import {ChattingIcon} from "../../design/Msg/MsgPageDesign";
 import {EduDate, EduHeader, EduInfo, EduItem} from "../../design/Mypage/EducationListDesign";
+import Common from "../../utils/Common";
 
 const CareerList = ({ mypageId }) => {
   const [careers, setCareers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState(null);
   const [newCareer, setNewCareer] = useState({
     companyName: "",
     jobName: "",
@@ -23,6 +25,18 @@ const CareerList = ({ mypageId }) => {
   ]
 
   useEffect(() => {
+    // 현재 로그인한 사용자 정보 가져오기
+    const fetchUserInfo = async () => {
+      try {
+        const response = await Common.getTokenByMemberId();
+        const memberId = response.data;
+        setLoggedInUser(memberId);
+        console.log("로그인한 memberId:", typeof memberId);
+      } catch (e) {
+        console.error("로그인한 사용자 정보를 가져오는 중 오류 발생:", e);
+      }
+    };
+
     const fetchCareers = async () => {
       try {
         const data = await CareerApi.getCareerByMypageId(mypageId);
@@ -33,7 +47,7 @@ const CareerList = ({ mypageId }) => {
         setLoading(false);
       }
     };
-
+    fetchUserInfo();
     if (mypageId) {
       fetchCareers();
     }
@@ -69,12 +83,16 @@ const CareerList = ({ mypageId }) => {
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error fetching careers</div>;
 
+  const isOwner = loggedInUser === Number(mypageId);
+
   return (
     <div>
       {/* 경력 섹션 헤더 */}
       <EduHeader>
         <h3>CAREER</h3>
-        <ChattingIcon src={CAREER_ICON_URL[1]} onClick={() => setIsFormVisible(!isFormVisible)}/>
+        {isOwner && (
+            <ChattingIcon src={CAREER_ICON_URL[1]} onClick={() => setIsFormVisible(!isFormVisible)}/>
+        )}
       </EduHeader>
 
       {/* 경력 추가 폼 */}

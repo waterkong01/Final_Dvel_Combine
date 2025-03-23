@@ -52,20 +52,20 @@ export const BioBox = styled.div`
     max-width: 900px; /* 좌우 폭을 좀 더 넓게 설정 */
     width: 100%;
     align-items: flex-end;
-    font-size: 1.2em;
+    //font-size: 1.2em;
 `
 
 export const BioContent = styled.div`
     width: 100%;
     display: flex;
     justify-content: flex-start;
+    margin-bottom: 1em;
     & textarea {
-        padding: 15px;
+        padding: 1em;
         border-radius: 12px;
         border: 1px solid #ccc;
         min-height: 150px;
         background: #FAFAF8;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         resize: none;
         transition: border-color 0.3s ease;
     }

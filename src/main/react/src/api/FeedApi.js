@@ -286,6 +286,36 @@ const FeedApi = {
       return [];
     }
   },
+
+  /**
+   * 특정 피드 조회
+   *
+   * @param {number} memberId - 사용자의 ID
+   * @returns {Promise<Object>} - 조회된 피드 데이터를 반환
+   */
+  getFeedByMemberId: async (memberId) => {
+    try {
+      const response = await AxiosInstance.get(`/api/feeds/member/${memberId}`);
+      console.log("피드 데이터: ", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("❌ 피드 조회 실패:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * 특정 게시글 삭제
+   *
+   * @param {number} feedId - 삭제할 게시글 ID
+   */
+  deleteFeed: async (feedId) => {
+    try {
+      await AxiosInstance.delete(`/api/feeds/${feedId}`);
+    } catch (error) {
+      console.error("❌ 게시글 좋아요 취소 실패:", error);
+    }
+  },
 };
 
 export default FeedApi;

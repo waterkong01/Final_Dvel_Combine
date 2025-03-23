@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -366,5 +367,27 @@ public class FeedService {
                 .orElseThrow(() -> new IllegalArgumentException("피드를 찾을 수 없습니다. ID: " + feedId));
         feed.setLikesCount(feed.getLikesCount() - 1);
         feedRepository.save(feed);
+    }
+
+    /**
+     * 특정 사용자의 피드 조회
+     *
+     * @param memberId          회원 ID
+     * @return 해당 피드를 FeedResponseDto로 반환
+     */
+    @Transactional(readOnly = true)
+    public List<FeedResponseDto> getFeedByMemberId(Integer memberId) {
+        List<Feed> feeds = feedRepository.findByMemberId(memberId);
+
+        if (feeds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return feeds.stream()
+                .map(this::mapToResponseDto) // currentMemberId 제거
+                .collect(Collectors.toList());
+    }
+    private FeedResponseDto mapToResponseDto(Feed feed) {
+        return mapToResponseDto(feed, null); // currentMemberId를 null로 전달
     }
 }

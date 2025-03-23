@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import { useParams } from "react-router-dom";
 import EducationList from "./EducationList";
 import CareerList from "./CareerList";
@@ -9,15 +9,16 @@ import MypageApi from "../../api/MypageApi";
 import {Container} from "../../design/CommonDesign";
 import {
   BioBox, BioContent, HalfBox,
-  HalfContainer, IconBox,
-  MypageContainer, ProfileImg, SkillBox, Tab, TabBox, TabsContent,
+  HalfContainer,
+  MypageContainer, ProfileImg, Tab, TabBox, TabsContent,
   UserInfoBox
 } from "../../design/Mypage/MypageDetailDesign";
 import {ChattingIcon} from "../../design/Msg/MsgPageDesign";
 import imgLogo2 from "../../images/DeveloperMark.jpg";
-import {SkillHeader} from "../../design/Mypage/SkillListDesign";
 import {EduHeader} from "../../design/Mypage/EducationListDesign";
 import FeedList from "./FeedList";
+import {FeedBottom} from "../../design/Mypage/FeedListDesign";
+import Common from "../../utils/Common";
 
 const MypageDetail = () => {
   const { mypageId } = useParams();
@@ -29,6 +30,7 @@ const MypageDetail = () => {
   const [editedMypageContent, setEditedMypageContent] = useState("");
   const [profileImg, setProfileImg] = useState(imgLogo2);
   const storage = getStorage();
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
   const USERINFO_ICON_URL = [
     "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fedit-text%201.png?alt=media&",  // edit
@@ -74,6 +76,18 @@ const MypageDetail = () => {
   };
 
   useEffect(() => {
+    // 현재 로그인한 사용자 정보 가져오기
+    const fetchUserInfo = async () => {
+      try {
+        const response = await Common.getTokenByMemberId();
+        const memberId = response.data;
+        setLoggedInUser(memberId);
+        console.log("로그인한 memberId:", typeof memberId);
+      } catch (e) {
+        console.error("로그인한 사용자 정보를 가져오는 중 오류 발생:", e);
+      }
+    };
+    fetchUserInfo();
     fetchMypageDetail();
     fetchMemberInfo(); // 회원 정보도 함께 가져옴
   }, [mypageId]);
@@ -134,6 +148,8 @@ const MypageDetail = () => {
     return <div className="loading">프로필을 찾을 수 없습니다.</div>;
   }
 
+  const isOwner = loggedInUser === Number(mypageId);
+
   return (
     <Container className="center">
       <MypageContainer>
@@ -146,16 +162,18 @@ const MypageDetail = () => {
             </HalfBox>
             <HalfBox>
               <ChattingIcon src={USERINFO_ICON_URL[3]} onClick={copyProfileUrl}/>
-              <ChattingIcon src={USERINFO_ICON_URL[2]}/>
+              {isOwner && (
+                  <ChattingIcon src={USERINFO_ICON_URL[2]}/>
+              )}
             </HalfBox>
           </UserInfoBox>
 
-          {/* 프로필 내용 및 수정 버튼 컨테이너 */}
           <BioBox>
             <EduHeader>
               <h3>SELF-INTRODUCTION</h3>
-              {/* + 버튼 클릭 시 기술 추가 폼 토글 */}
-              <ChattingIcon src={USERINFO_ICON_URL[0]} onClick={handleEdit}/>
+              {isOwner && (
+                  <ChattingIcon src={USERINFO_ICON_URL[0]} onClick={handleEdit}/>
+              )}
             </EduHeader>
             {/* 프로필 내용 */}
             <BioContent>
@@ -173,14 +191,14 @@ const MypageDetail = () => {
 
             {/* 편집 모드일 때만 저장/취소 버튼 표시 */}
             {isEditing && (
-                <div className="edit-buttons">
-                  <button className="save-btn" onClick={handleSave}>
+                <FeedBottom>
+                  <button className="save" onClick={handleSave}>
                     저장
                   </button>
-                  <button className="cancel-btn" onClick={handleCancel}>
+                  <button onClick={handleCancel}>
                     취소
                   </button>
-                </div>
+                </FeedBottom>
             )}
           </BioBox>
 
@@ -212,7 +230,7 @@ const MypageDetail = () => {
                   <CareerList mypageId={mypageId} />
                 </>
             )}
-            {activeTab === "feed" && <FeedList mypageId={mypageId} />}
+            {activeTab === "feed" && <FeedList memberId={member?.memberId} />}
           </TabsContent>
         </HalfContainer>
       </MypageContainer>

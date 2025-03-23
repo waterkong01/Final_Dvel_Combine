@@ -287,4 +287,16 @@ public class FeedController {
         feedService.unlikeFeed(feedId, memberId);
         return ResponseEntity.ok().build();
     }
+
+    /**
+     * 특정 사용자의 피드 조회 엔드포인트.
+     *
+     * @param memberId 사용자 ID
+     * @return 해당 피드 FeedResponseDto 반환
+     */
+    @GetMapping("/member/{memberId}")
+    public ResponseEntity<List<FeedResponseDto>> getFeedByMemberId(@PathVariable Integer memberId) {
+        List<FeedResponseDto> feedResponses = feedService.getFeedByMemberId(memberId);
+        return ResponseEntity.ok(feedResponses);
+    }
 }

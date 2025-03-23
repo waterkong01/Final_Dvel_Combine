@@ -64,8 +64,6 @@ import {Container} from "../../design/CommonDesign";
 import {MemberInfoContext} from "../../api/provider/MemberInfoContextProvider2";
 import {ChatContext} from "../../api/context/ChatStore";
 import ChattingApi from "../../api/ChattingApi";
-import {storage} from "../../utils/FirebaseConfig";
-import {post} from "axios";
 
 /**
  * 재귀적으로 댓글(또는 대댓글)을 업데이트한다.

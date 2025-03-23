@@ -3,13 +3,17 @@ import "../../design/Mypage/SkillList.css";
 import SkillApi from "../../api/SkillApi";
 import {AddSkillBox, SkillBox, SkillHeader, SkillIcon, SkillListContainer} from "../../design/Mypage/SkillListDesign";
 import {ChattingIcon} from "../../design/Msg/MsgPageDesign";
-import {EduHeader} from "../../design/Mypage/EducationListDesign"; // 스타일 적용
+import {EduHeader} from "../../design/Mypage/EducationListDesign";
+import {toast} from "react-toastify";
+import Common from "../../utils/Common"; // 스타일 적용
 
 const SkillList = ({ mypageId }) => {
   const [skills, setSkills] = useState([]); // 기술 목록 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [newSkill, setNewSkill] = useState(""); // 새로운 기술 입력 상태
   const [isAddingSkill, setIsAddingSkill] = useState(false); // 기술 추가 폼 보이기/숨기기 상태
+  const [isEditing, setIsEditing] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
   const SKILL_ICON_URL = [
     "https://firebasestorage.googleapis.com/v0/b/d-vel-b334f.firebasestorage.app/o/firebase%2Fprofile%2Fclose%201.png?alt=media&",  // close
@@ -21,7 +25,8 @@ const SkillList = ({ mypageId }) => {
   const fetchSkills = async () => {
     try {
       const data = await SkillApi.getSkillByMypageId(mypageId); // 프로필 ID로 기술 목록 가져오기
-      setSkills(data); // 상태 업데이트
+      setSkills(data);
+      console.log("mypageId:", typeof mypageId);
     } catch (error) {
       console.error("기술 목록을 가져오는 중 오류 발생:", error);
     } finally {
@@ -29,38 +34,68 @@ const SkillList = ({ mypageId }) => {
     }
   };
 
+  useEffect(() => {
+    // 현재 로그인한 사용자 정보 가져오기
+    const fetchUserInfo = async () => {
+      try {
+        const response = await Common.getTokenByMemberId();
+        const memberId = response.data;
+        setLoggedInUser(memberId);
+        console.log("로그인한 memberId:", typeof memberId);
+      } catch (e) {
+        console.error("로그인한 사용자 정보를 가져오는 중 오류 발생:", e);
+      }
+    };
+    fetchUserInfo();
+    fetchSkills();
+  }, [mypageId]);
+
   // 새로운 기술 추가
   const addSkill = async () => {
-    if (!newSkill) return; // 기술 이름이 없으면 추가하지 않음
+    if (!newSkill) return;
     try {
       const skill = { skillName: newSkill };
       const addedSkill = await SkillApi.createSkill(mypageId, skill);
-      setSkills([...skills, addedSkill]); // 추가된 기술을 목록에 추가
-      setNewSkill(""); // 입력값 초기화
-      setIsAddingSkill(false); // 기술 추가 폼 숨기기
+      setSkills([...skills, addedSkill]);
+      setNewSkill("");
+      setIsAddingSkill(false);
     } catch (error) {
-      console.error("기술 추가 중 오류 발생:", error);
+      console.error("스킬 추가 중 오류 발생:", error);
     }
   };
 
-  useEffect(() => {
-    fetchSkills(); // 컴포넌트 마운트 시 기술 목록 가져오기
-  }, [mypageId]);
+  const deleteSkill = async (skillId) => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+
+    console.log("삭제할 skill의 mypageId:", mypageId, "삭제할 skillId:", skillId);
+
+    try {
+      await SkillApi.deleteSkill(mypageId, skillId);
+      setSkills(skills.filter((skill) => skill.id !== skillId));
+      toast.success("스킬이 삭제되었습니다.");
+    } catch (error) {
+      console.error("스킬 삭제 중 오류 발생:", error);
+      toast.error("스킬 삭제에 실패했습니다.");
+    }
+  }
 
   if (loading) {
     return <div className="loading">기술 목록 로딩 중...</div>; // 로딩 중 표시
   }
 
+  const isOwner = loggedInUser === Number(mypageId);
+
   return (
     <SkillListContainer>
       <EduHeader>
         <h3>SKILL</h3>
-        {/* + 버튼 클릭 시 기술 추가 폼 토글 */}
-        <ChattingIcon src={SKILL_ICON_URL[2]} onClick={() => setIsAddingSkill(!isAddingSkill)}/>
+        {isOwner && (
+            <ChattingIcon src={SKILL_ICON_URL[2]} onClick={() => setIsEditing(!isEditing)}/>
+        )}
       </EduHeader>
 
       {/* 기술 추가 입력란 */}
-      {isAddingSkill && (
+      {isOwner && isAddingSkill && (
         <AddSkillBox>
           <input
             type="text"
@@ -76,6 +111,13 @@ const SkillList = ({ mypageId }) => {
         {skills.map((skill) => (
           <SkillIcon key={skill.id}>
             {skill.skillName}
+            {isOwner && isEditing && (
+                <img
+                    src={SKILL_ICON_URL[0]}
+                    alt="delete"
+                    onClick={() => deleteSkill(skill.skillId)}
+                />
+            )}
           </SkillIcon>
         ))}
       </SkillBox>

@@ -3,11 +3,13 @@ import "../../design/Mypage/EducationList.css";
 import EducationApi from "../../api/EducationApi";
 import {EduContainer, EduDate, EduHeader, EduInfo, EduItem} from "../../design/Mypage/EducationListDesign";
 import {ChattingIcon} from "../../design/Msg/MsgPageDesign";
+import Common from "../../utils/Common";
 
 const EducationList = ({ mypageId }) => {
   const [education, setEducation] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState(null);
   const [newEducation, setNewEducation] = useState({
     schoolName: "",
     degree: "",
@@ -23,6 +25,18 @@ const EducationList = ({ mypageId }) => {
   ]
 
   useEffect(() => {
+    // 현재 로그인한 사용자 정보 가져오기
+    const fetchUserInfo = async () => {
+      try {
+        const response = await Common.getTokenByMemberId();
+        const memberId = response.data;
+        setLoggedInUser(memberId);
+        console.log("로그인한 memberId:", typeof memberId);
+      } catch (e) {
+        console.error("로그인한 사용자 정보를 가져오는 중 오류 발생:", e);
+      }
+    };
+
     const fetchEducation = async () => {
       try {
         const data = await EducationApi.getEducationByMypageId(
@@ -35,7 +49,7 @@ const EducationList = ({ mypageId }) => {
         setLoading(false);
       }
     };
-
+    fetchUserInfo();
     if (mypageId) {
       fetchEducation();
     }
@@ -71,12 +85,16 @@ const EducationList = ({ mypageId }) => {
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error fetching education</div>;
 
+  const isOwner = loggedInUser === Number(mypageId);
+
   return (
     <EduContainer>
       {/* 교육 섹션 헤더 */}
       <EduHeader>
         <h3>EDUCATION</h3>
-        <ChattingIcon src={EDU_ICON_URL[1]} onClick={() => setIsFormVisible(!isFormVisible)}/>
+        {isOwner && (
+            <ChattingIcon src={EDU_ICON_URL[1]} onClick={() => setIsFormVisible(!isFormVisible)}/>
+        )}
       </EduHeader>
 
       {/* 교육 추가 폼 */}
